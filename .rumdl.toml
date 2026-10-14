@@ -1,0 +1,11 @@
+# rumdl 配置 —— Markdown lint/format，规则见 https://rumdl.dev
+#
+# 被跟踪的文档只有 FIXES.md / MAINTENANCE.md / README.md；
+# `.ref/`（上游参考副本）已在 .gitignore 里，而 rumdl 默认
+# respect_gitignore = true，会自动跳过，无需在这里写 exclude。
+
+[MD013]
+# 行宽上限 80，按视觉列宽计（length-mode = "visual"，CJK 字符算 2 列）。
+# 代码块里是刻意对齐的控制台转录（HTTP 会话、目录树、冒烟输出），
+# 折行会破坏箭头/缩进对齐，因此豁免。
+code-blocks = false

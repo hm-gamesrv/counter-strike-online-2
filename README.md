@@ -6,15 +6,19 @@ Counter-Strike Online 2 服务端。用于 **2017 年国服** 和 **2018 年韩�
 
 ## 1. 简述
 
-本项目是 [LoveBeforT/CSO2-Server](https://github.com/LoveBeforT/CSO2-Server) 的改进版本，主要改进：
+本项目是 [LoveBeforT/CSO2-Server](https://github.com/LoveBeforT/CSO2-Server)
+的改进版本，主要改进：
 
-- **纯 Go 静态编译**：移除 cgo/iconv 依赖，编码转换使用 `golang.org/x/text` 纯 Go 实现
-- **单文件发布**：配置、本地化、游戏数据与管理页面全部编进二进制（`go:embed`），不需要额外资源目录
-- **Web 管理后台**：取代旧的明文 TCP 控制台，账号增删改、发物品、踢人、关房间都在浏览器里完成
+- **纯 Go 静态编译**：移除 cgo/iconv 依赖，编码转换使用 `golang.org/x/text`
+  纯 Go 实现
+- **单文件发布**：配置、本地化、游戏数据与管理页面全部编进二进制（`go:embed`），
+  不需要额外资源目录
+- **Web 管理后台**：取代旧的明文 TCP 控制台，账号增删改、发物品、踢人、
+  关房间都在浏览器里完成
 - **优化的容器化运行**：支持 Docker / Podman 一行命令启动
 - **GitHub Actions 自动构建**：推送镜像到 GHCR，无需本地编译
 
-**镜像：**
+### 1.1. 镜像
 
 | 仓库 | tag |
 | ---- | --- |
@@ -108,7 +112,8 @@ docker compose up -d
 设置分两类：
 
 - **部署**（这个实例怎么跑）——环境变量，见 2.3。
-- **玩法**（服务器怎么表现）——`$DATA_DIR/server.yaml`，可选，**增量覆盖**内置默认值：
+- **玩法**（服务器怎么表现）——`$DATA_DIR/server.yaml`，可选，
+  **增量覆盖**内置默认值：
 
 ```yaml
 server:
@@ -141,4 +146,5 @@ debug:
 
 ## 6. 原项目
 
-README 与更多细节见原始项目：[LoveBeforT/CSO2-Server](https://github.com/LoveBeforT/CSO2-Server)
+README 与更多细节见原始项目：
+[LoveBeforT/CSO2-Server](https://github.com/LoveBeforT/CSO2-Server)
