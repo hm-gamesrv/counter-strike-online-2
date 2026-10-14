@@ -6,8 +6,8 @@ import (
 	. "github.com/KouKouChan/CSO2-Server/blademaster/core/message"
 	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
 	. "github.com/KouKouChan/CSO2-Server/kerlong"
+	. "github.com/KouKouChan/CSO2-Server/logging"
 	. "github.com/KouKouChan/CSO2-Server/servermanager"
-	. "github.com/KouKouChan/CSO2-Server/verbose"
 )
 
 func OnTryItemUse(p *PacketData, client net.Conn) {
@@ -28,7 +28,7 @@ func OnTryItemUse(p *PacketData, client net.Conn) {
 	itemID := uPtr.GetItemIDBySeq(pkt.ItemSeq)
 	switch itemID {
 	case 2001: //改名卡
-		if IsExistsIngameName(pkt.NewName) {
+		if NicknameExists(string(pkt.NewName)) {
 			OnSendMessage(uPtr.CurrentSequence, uPtr.CurrentConnection, MessageDialogBox, CSO2_POPUP_NICKNAME_ALREADY_EXIST)
 			DebugInfo(2, "User", uPtr.UserName, "try change nickname to", string(pkt.NewName), "but this name already exists")
 			return

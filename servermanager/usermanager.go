@@ -7,7 +7,7 @@ import (
 
 	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
 	. "github.com/KouKouChan/CSO2-Server/kerlong"
-	. "github.com/KouKouChan/CSO2-Server/verbose"
+	. "github.com/KouKouChan/CSO2-Server/logging"
 )
 
 const (
@@ -24,33 +24,35 @@ var (
 )
 
 func DelUserWithConn(con net.Conn) bool {
-	if UsersManager.UserNum == 0 {
-		DebugInfo(2, "UsersManager Error : There is no online user !")
-		return false
-	}
-	for k, v := range UsersManager.Users {
+	var target *User
+	for _, v := range UsersManager.SnapshotUsers() {
 		if v.CurrentConnection == con {
-			v.CheckOutdatedItem()
-			CheckErr(UpdateUserToDB(v))
-			UsersManager.Lock.Lock()
-			defer UsersManager.Lock.Unlock()
-			delete(UsersManager.Users, k)
-			UsersManager.UserNum--
-			return true
+			target = v
+			break
 		}
 	}
-	return false
+	if target == nil {
+		return false
+	}
+
+	// Persist outside the manager lock: saving does file I/O, which should not
+	// block every other goroutine.
+	target.CheckOutdatedItem()
+	CheckErr(SaveUser(target))
+
+	return UsersManager.DelUserByID(target.Userid)
 }
 
 func GetNewUserID() uint32 {
+	//如果map中不存在该ID，则返回ID
+	UsersManager.Lock.RLock()
+	defer UsersManager.Lock.RUnlock()
+
 	if UsersManager.UserNum > MAXUSERNUM {
 		DebugInfo(2, "Online users is too much , unable to get a new id !")
 		//ID=0 是非法的
 		return 0
 	}
-	//如果map中不存在该ID，则返回ID
-	UsersManager.Lock.Lock()
-	defer UsersManager.Lock.Unlock()
 	for i := 1; i <= MAXUSERNUM; i++ {
 		if _, ok := UsersManager.Users[uint32(i)]; !ok {
 			return uint32(i)
@@ -59,24 +61,21 @@ func GetNewUserID() uint32 {
 	return 0
 }
 
-//getUserByLogin 假定nexonUsername是唯一
+// getUserByLogin 假定nexonUsername是唯一
 func GetUserByLogin(account string, passwd []byte) (*User, int) {
 	//查看是否有已经登陆的同名用户
-	for _, v := range UsersManager.Users {
+	for _, v := range UsersManager.SnapshotUsers() {
 		if v.UserName == account {
 			return v, USER_ALREADY_LOGIN
 		}
 	}
-	//查看数据库是否有该用户
-	return GetUserFromDatabase(account, passwd)
+	//检查账号存储中是否有该用户
+	return LoadUserForLogin(account, passwd)
 }
 
-//通过连接获取用户
+// 通过连接获取用户
 func GetUserFromConnection(client net.Conn) *User {
-	if UsersManager.UserNum <= 0 {
-		return nil
-	}
-	for _, v := range UsersManager.Users {
+	for _, v := range UsersManager.SnapshotUsers() {
 		if v.CurrentConnection == client {
 			return v
 		}
@@ -84,23 +83,20 @@ func GetUserFromConnection(client net.Conn) *User {
 	return nil
 }
 
-//通过ID获取用户
+// 通过ID获取用户
 func GetUserFromID(id uint32) *User {
-	if UsersManager.UserNum <= 0 {
-		return nil
-	}
+	UsersManager.Lock.RLock()
+	defer UsersManager.Lock.RUnlock()
+
 	if v, ok := UsersManager.Users[id]; ok {
 		return v
 	}
 	return nil
 }
 
-//通过name获取用户
+// 通过name获取用户
 func GetUserFromIngameName(name []byte) *User {
-	if UsersManager.UserNum <= 0 {
-		return nil
-	}
-	for _, v := range UsersManager.Users {
+	for _, v := range UsersManager.SnapshotUsers() {
 		if CompareBytes([]byte(v.IngameName), name) {
 			return v
 		}

@@ -2,7 +2,7 @@ package inventory
 
 import (
 	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	. "github.com/KouKouChan/CSO2-Server/configure"
+	. "github.com/KouKouChan/CSO2-Server/config"
 	. "github.com/KouKouChan/CSO2-Server/kerlong"
 )
 
@@ -14,7 +14,7 @@ var (
 )
 
 func BuildInventoryInfo(u *User) []byte {
-	if Conf.UnlockAllWeapons == 1 {
+	if Conf.UnlockAllWeapons {
 		return FullInventoryReply
 	}
 	buf := make([]byte, 5+u.Inventory.NumOfItem*19)
@@ -165,21 +165,9 @@ func BuildUnlockReply(u *User) []byte {
 // }
 
 func CreateFullUserInventory() UserInventory {
-	Inv := UserInventory{
-		0,
-		//createDeafaultInventoryItem(),
-		CreateFullInventoryItem(),
-		map[uint32]bool{},
-		1047,
-		1048,
-		0,
-		0,
-		0,
-		0,
-		0,
-		42001,
-		CreateFullUserBuyMenu(),
-		CreateFullLoadout(),
+	Inv := UserInventory{NumOfItem: 0, Items:
+	//createDeafaultInventoryItem(),
+	CreateFullInventoryItem(), OnlyOnceBundleItemId: map[uint32]bool{}, CTModel: 1047, TModel: 1048, HeadItem: 0, GloveItem: 0, BackItem: 0, StepsItem: 0, CardItem: 0, SprayItem: 42001, BuyMenu: CreateFullUserBuyMenu(), Loadouts: CreateFullLoadout(),
 	}
 	Inv.NumOfItem = uint16(len(Inv.Items))
 	return Inv
@@ -195,68 +183,68 @@ func CreateFullInventoryItem() []UserInventoryItem {
 	var i uint32
 	//用户角色
 	for i = 1001; i <= 1058; i++ {
-		items = append(items, UserInventoryItem{i, 1, 1, 0})
+		items = append(items, UserInventoryItem{Id: i, Count: 1, Type: 1, Time: 0})
 	}
 	//添加默认武器
 	number := []uint32{2, 3, 4, 6, 8, 13, 14, 15, 18, 19, 21, 23, 27, 34, 36, 37, 80, 128, 101, 49009, 49004}
 	for _, v := range number {
-		items = append(items, UserInventoryItem{v, 1, 1, 0})
+		items = append(items, UserInventoryItem{Id: v, Count: 1, Type: 1, Time: 0})
 	}
 	//解锁武器
 	for i = 1; i <= 33; i++ {
 		if IsIllegal(i) {
 			continue
 		}
-		items = append(items, UserInventoryItem{i, 1, 1, 0})
+		items = append(items, UserInventoryItem{Id: i, Count: 1, Type: 1, Time: 0})
 	}
 	for i = 44; i <= 163; i++ {
 		if IsIllegal(i) {
 			continue
 		}
-		items = append(items, UserInventoryItem{i, 1, 1, 0})
+		items = append(items, UserInventoryItem{Id: i, Count: 1, Type: 1, Time: 0})
 	}
 	//隔离区技能
-	items = append(items, UserInventoryItem{2019, 1, 1, 0})
-	items = append(items, UserInventoryItem{2020, 1, 1, 0})
+	items = append(items, UserInventoryItem{Id: 2019, Count: 1, Type: 1, Time: 0})
+	items = append(items, UserInventoryItem{Id: 2020, Count: 1, Type: 1, Time: 0})
 	for i = 2021; i <= 2023; i++ {
-		items = append(items, UserInventoryItem{i, 1, 1, 0})
+		items = append(items, UserInventoryItem{Id: i, Count: 1, Type: 1, Time: 0})
 	}
 	//武器皮肤
 	for i = 5042; i <= 5370; i++ {
 		if IsIllegal(i) {
 			continue
 		}
-		items = append(items, UserInventoryItem{i, 1, 1, 0})
+		items = append(items, UserInventoryItem{Id: i, Count: 1, Type: 1, Time: 0})
 	}
-	items = append(items, UserInventoryItem{5997, 1, 1, 0})
+	items = append(items, UserInventoryItem{Id: 5997, Count: 1, Type: 1, Time: 0})
 	//帽子
 	for i = 10001; i <= 10133; i++ {
-		items = append(items, UserInventoryItem{i, 1, 1, 0})
+		items = append(items, UserInventoryItem{Id: i, Count: 1, Type: 1, Time: 0})
 	}
 	//背包
 	for i = 20001; i <= 20107; i++ {
-		items = append(items, UserInventoryItem{i, 1, 1, 0})
+		items = append(items, UserInventoryItem{Id: i, Count: 1, Type: 1, Time: 0})
 	}
 	//手套
 	for i = 30001; i <= 30027; i++ {
-		items = append(items, UserInventoryItem{i, 1, 1, 0})
+		items = append(items, UserInventoryItem{Id: i, Count: 1, Type: 1, Time: 0})
 	}
 	//脚部特效
 	for i = 40001; i <= 40025; i++ {
-		items = append(items, UserInventoryItem{i, 1, 1, 0})
+		items = append(items, UserInventoryItem{Id: i, Count: 1, Type: 1, Time: 0})
 	}
 	//喷漆
 	for i = 42001; i <= 42020; i++ {
-		items = append(items, UserInventoryItem{i, 1, 1, 0})
+		items = append(items, UserInventoryItem{Id: i, Count: 1, Type: 1, Time: 0})
 	}
 	//道具
 	for i = 49001; i <= 49010; i++ {
-		items = append(items, UserInventoryItem{i, 1, 1, 0})
+		items = append(items, UserInventoryItem{Id: i, Count: 1, Type: 1, Time: 0})
 	}
-	items = append(items, UserInventoryItem{49999, 1, 1, 0})
+	items = append(items, UserInventoryItem{Id: 49999, Count: 1, Type: 1, Time: 0})
 	//角色卡片
 	for i = 60001; i <= 60004; i++ {
-		items = append(items, UserInventoryItem{i, 1, 1, 0})
+		items = append(items, UserInventoryItem{Id: i, Count: 1, Type: 1, Time: 0})
 	}
 	return items
 }

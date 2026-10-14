@@ -4,10 +4,10 @@ import (
 	"net"
 
 	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	. "github.com/KouKouChan/CSO2-Server/configure"
+	. "github.com/KouKouChan/CSO2-Server/config"
 	. "github.com/KouKouChan/CSO2-Server/kerlong"
+	. "github.com/KouKouChan/CSO2-Server/logging"
 	. "github.com/KouKouChan/CSO2-Server/servermanager"
-	. "github.com/KouKouChan/CSO2-Server/verbose"
 )
 
 var (
@@ -29,7 +29,7 @@ func OnShopList(p *PacketData, client net.Conn) {
 
 }
 func BuildShopList() []byte {
-	if Conf.EnableShop == 0 {
+	if !Conf.EnableShop {
 		return []byte{0, 0, 0}
 	}
 	return ShopReply

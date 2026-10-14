@@ -1,0 +1,48 @@
+# CSO2-Server configuration.
+#
+# This file is OPTIONAL. The settings below are compiled into the executable as
+# defaults, so a fresh installation runs correctly without any file on disk.
+#
+# To change something, copy this file to
+#
+#     $DATA_DIR/server.yaml
+#
+# and edit that copy. That location is deliberate: DATA_DIR is the directory
+# you already mount as a volume, so the configuration travels with the player
+# data instead of living inside the container image. The copy next to the data
+# wins over the one built into the binary.
+#
+# Unknown keys are rejected at startup rather than ignored, so a typo tells you
+# immediately instead of silently doing nothing.
+#
+# NOT in this file, because they describe how an instance is deployed rather
+# than how it plays - set them as environment variables:
+#
+#     DATA_DIR       where player data lives       (default: <exe dir>/data)
+#     TCP_PORT       game port                     (default: 30001)
+#     UDP_PORT       UDP hole-punch port           (default: 30002)
+#     ADMIN_PORT     admin web API port            (default: 1315)
+#     ENABLE_ADMIN   start the admin web API?      (default: true)
+#     LOCALE         language, e.g. zh-cn          (default: zh-cn)
+#     CODE_PAGE      client character set          (default: derived from LOCALE)
+#     ADMIN_TOKEN    admin bearer token            (required for the admin API)
+
+server:
+  # Maximum number of players online at the same time. 0 means unlimited.
+  max_users: 0
+
+  # Enable the in-game shop.
+  enable_shop: true
+
+  # Give every player the complete weapon inventory, ignoring unlocks.
+  unlock_all_weapons: true
+
+debug:
+  # How much debug output to log. Informational messages, warnings and errors
+  # are always logged, whatever this is set to - the startup banner in
+  # particular stays visible so you can always see which ports were opened.
+  #
+  #   0 = no debug output
+  #   1 = debug output for notable events          (41 call sites)
+  #   2 = verbose debug output                     (318 call sites)
+  level: 2

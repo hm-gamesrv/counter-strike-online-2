@@ -7,11 +7,11 @@ import (
 	. "github.com/KouKouChan/CSO2-Server/blademaster/core/inventory"
 	. "github.com/KouKouChan/CSO2-Server/blademaster/core/message"
 	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	. "github.com/KouKouChan/CSO2-Server/configure"
+	. "github.com/KouKouChan/CSO2-Server/config"
 	. "github.com/KouKouChan/CSO2-Server/kerlong"
 	. "github.com/KouKouChan/CSO2-Server/kerlong/encode"
+	. "github.com/KouKouChan/CSO2-Server/logging"
 	. "github.com/KouKouChan/CSO2-Server/servermanager"
-	. "github.com/KouKouChan/CSO2-Server/verbose"
 )
 
 func OnLogin(seq *uint8, dataPacket *PacketData, client net.Conn) {
@@ -144,7 +144,7 @@ func OnLogin(seq *uint8, dataPacket *PacketData, client net.Conn) {
 	OnSendMessage(u.CurrentSequence, u.CurrentConnection, MessageNotice, []byte("本游戏免费，如果你是买到的本游戏，说明你被骗了！官网：github.com/KouKouChan/CSO2-Server"))
 }
 
-//BuildUserStart 返回结构
+// BuildUserStart 返回结构
 // userId
 // loginName
 // userName
@@ -158,7 +158,7 @@ func BuildUserStart(u *User) []byte {
 	WriteString(&userbuf, []byte(u.UserName), &offset)
 	WriteString(&userbuf, []byte(u.IngameName), &offset)
 	WriteUint8(&userbuf, 1, &offset)
-	WriteUint16(&userbuf, uint16(Conf.HolePunchPort), &offset)
+	WriteUint16(&userbuf, uint16(Env.UDPPort), &offset)
 	return userbuf
 }
 

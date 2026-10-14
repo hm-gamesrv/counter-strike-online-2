@@ -5,11 +5,11 @@ import (
 
 	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
 	. "github.com/KouKouChan/CSO2-Server/kerlong"
+	. "github.com/KouKouChan/CSO2-Server/logging"
 	. "github.com/KouKouChan/CSO2-Server/servermanager"
-	. "github.com/KouKouChan/CSO2-Server/verbose"
 )
 
-//onUpdateRoom 房主更新房间信息
+// onUpdateRoom 房主更新房间信息
 func OnUpdateRoom(p *PacketData, client net.Conn) {
 	//检索数据报
 	var pkt InUpSettingReq

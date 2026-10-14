@@ -1,16 +1,15 @@
 package disassemble
 
 import (
-	"math/rand"
+	"math/rand/v2"
 	"net"
-	"time"
 
 	. "github.com/KouKouChan/CSO2-Server/blademaster/core/inventory"
 	. "github.com/KouKouChan/CSO2-Server/blademaster/core/message"
 	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
 	. "github.com/KouKouChan/CSO2-Server/kerlong"
+	. "github.com/KouKouChan/CSO2-Server/logging"
 	. "github.com/KouKouChan/CSO2-Server/servermanager"
-	. "github.com/KouKouChan/CSO2-Server/verbose"
 )
 
 var (
@@ -59,8 +58,7 @@ func OnDisassembleWeapon(p *PacketData, client net.Conn) {
 }
 
 func getRandomLotto() uint32 {
-	rand.Seed(time.Now().UnixNano())
-	return lottoIDs[rand.Intn(3)]
+	return lottoIDs[rand.IntN(3)]
 }
 
 func buildDisassembleWeapon(itemid uint32) []byte {

@@ -1306,7 +1306,7 @@ func (p InRoomCountdownPacket) ShouldCountdown() bool {
 	return p.CountdownType == InProgress
 }
 
-//GetNextSeq 获取下一次的seq数据包序号
+// GetNextSeq 获取下一次的seq数据包序号
 func GetNextSeq(seq *uint8) uint8 {
 	if *seq == MAXSEQUENCE {
 		*seq = MINSEQUENCE
@@ -1316,7 +1316,7 @@ func GetNextSeq(seq *uint8) uint8 {
 	return *seq
 }
 
-//BuildHeader 建立数据包通用头部
+// BuildHeader 建立数据包通用头部
 func BuildHeader(seq *uint8, id uint8) []byte {
 	header := make([]byte, 5)
 	header[0] = PacketTypeSignature
@@ -1327,19 +1327,19 @@ func BuildHeader(seq *uint8, id uint8) []byte {
 	return header
 }
 
-//WriteLen 写入数据长度到数据包通用头部
+// WriteLen 写入数据长度到数据包通用头部
 func WriteLen(data *[]byte) {
 	headerL := uint16(len(*data)) - HeaderLen
 	(*data)[2] = uint8(headerL)
 	(*data)[3] = uint8(headerL >> 8)
 }
 
-//NewNullString 新建空的字符串
+// NewNullString 新建空的字符串
 func NewNullString() []byte {
 	return []byte{0x00, 0x00, 0x00, 0x00}
 }
 
-//SendPacket 发送数据包
+// SendPacket 发送数据包
 func SendPacket(data []byte, client net.Conn) {
 	WriteLen(&data)
 	client.Write(data)

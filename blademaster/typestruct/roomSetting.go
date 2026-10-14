@@ -6,7 +6,7 @@ import (
 	. "github.com/KouKouChan/CSO2-Server/kerlong"
 )
 
-//每个房间的设置数据
+// 每个房间的设置数据
 type RoomSettings struct {
 	LenOfName          uint8
 	RoomName           []byte
@@ -212,7 +212,7 @@ func (dest *Room) ToUpdateSetting(src *InUpSettingReq) {
 	}
 }
 
-//创建房间设置数据包
+// 创建房间设置数据包
 func BuildRoomSetting(room *Room, flags uint64) []byte {
 	buf := make([]byte, 128+room.Setting.LenOfName+ //实际计算是最大63字节+长度
 		room.Setting.LenOfPassWd+

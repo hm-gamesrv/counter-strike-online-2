@@ -5,7 +5,7 @@ import (
 
 	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
 	. "github.com/KouKouChan/CSO2-Server/kerlong"
-	. "github.com/KouKouChan/CSO2-Server/verbose"
+	. "github.com/KouKouChan/CSO2-Server/logging"
 )
 
 func OnChat(p *PacketData, client net.Conn) {

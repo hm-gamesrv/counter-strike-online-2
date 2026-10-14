@@ -1,23 +1,16 @@
 package host
 
 import (
-	"math/rand"
+	"math/rand/v2"
 	"net"
-	"sync"
-	"time"
 
 	. "github.com/KouKouChan/CSO2-Server/blademaster/Exp"
 	. "github.com/KouKouChan/CSO2-Server/blademaster/core/inventory"
 	. "github.com/KouKouChan/CSO2-Server/blademaster/core/room"
 	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
 	. "github.com/KouKouChan/CSO2-Server/kerlong"
+	. "github.com/KouKouChan/CSO2-Server/logging"
 	. "github.com/KouKouChan/CSO2-Server/servermanager"
-	. "github.com/KouKouChan/CSO2-Server/verbose"
-)
-
-var (
-	randSeed     = 0
-	randSeedLock sync.Mutex
 )
 
 func OnHostGameEnd(p *PacketData, client net.Conn) {
@@ -82,7 +75,7 @@ func OnHostGameEnd(p *PacketData, client net.Conn) {
 	for _, v := range rm.Users {
 		rst := BuildUserReadyStatus(v)
 		//UserInfo部分
-		rst = BytesCombine(BuildHeader(v.CurrentSequence, PacketTypeUserInfo), BuildUserInfo(0XFFFFFFFF, NewUserInfo(v), v.Userid, true))
+		rst = BytesCombine(BuildHeader(v.CurrentSequence, PacketTypeUserInfo), BuildUserInfo(0xFFFFFFFF, NewUserInfo(v), v.Userid, true))
 		SendPacket(rst, v.CurrentConnection)
 		for _, k := range rm.Users {
 			rst = BytesCombine(BuildHeader(k.CurrentSequence, PacketTypeRoom), rst)
@@ -261,14 +254,7 @@ func GetGainPoints(u *User, bot uint8) uint64 {
 }
 
 func GetRandomBox() uint32 {
-	randSeedLock.Lock()
-	rand.Seed(int64(randSeed) + time.Now().UnixNano())
-	idx := rand.Intn(len(BoxIDs))
-	randSeed++
-	if randSeed > 10000 {
-		randSeed = 0
-	}
-	randSeedLock.Unlock()
+	idx := rand.IntN(len(BoxIDs))
 	return BoxIDs[idx]
 }
 

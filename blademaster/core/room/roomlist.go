@@ -6,8 +6,8 @@ import (
 
 	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
 	. "github.com/KouKouChan/CSO2-Server/kerlong"
+	. "github.com/KouKouChan/CSO2-Server/logging"
 	. "github.com/KouKouChan/CSO2-Server/servermanager"
-	. "github.com/KouKouChan/CSO2-Server/verbose"
 )
 
 func OnRoomList(p *PacketData, client net.Conn) {
@@ -96,9 +96,7 @@ func OnBroadcastRoomList(chlsrvid uint8, chlid uint8, u *User) {
 
 func BuildLobbyReply(seq *uint8, p PacketData, chlsrvid, chlid uint8) []byte {
 	rst := BuildHeader(seq, PacketTypeLobby)
-	lob := OutLobbyJoinRoom{
-		JoinLobby, chlsrvid, chlid,
-	}
+	lob := OutLobbyJoinRoom{Unk00: JoinLobby, Unk01: chlsrvid, Unk02: chlid}
 	rst = append(rst,
 		SetLobby,
 		lob.Unk00,
@@ -116,7 +114,7 @@ func BuildCurrentLobby(seq *uint8, chlsrvid, chlid uint8) []byte {
 	return rst
 }
 
-//暂定
+// 暂定
 func BuildRoomList(seq *uint8, chl *ChannelInfo) []byte {
 	rst := BuildHeader(seq, PacketTypeRoomList)
 	rst = append(rst,

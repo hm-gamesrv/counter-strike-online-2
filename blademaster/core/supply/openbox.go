@@ -1,16 +1,15 @@
 package supply
 
 import (
-	"math/rand"
+	"math/rand/v2"
 	"net"
-	"time"
 
 	. "github.com/KouKouChan/CSO2-Server/blademaster/core/inventory"
 	. "github.com/KouKouChan/CSO2-Server/blademaster/core/message"
 	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
 	. "github.com/KouKouChan/CSO2-Server/kerlong"
+	. "github.com/KouKouChan/CSO2-Server/logging"
 	. "github.com/KouKouChan/CSO2-Server/servermanager"
-	. "github.com/KouKouChan/CSO2-Server/verbose"
 )
 
 func OnSupplyOpenBox(p *PacketData, client net.Conn) {
@@ -80,8 +79,7 @@ func BuildSupplyOpenBox(itemid uint32, count, day uint16) []byte {
 
 func GetBoxItem(boxid uint32) (uint32, uint16) {
 	if v, ok := BoxList[boxid]; ok {
-		rand.Seed(time.Now().UnixNano())
-		radV := rand.Intn(v.TotalValue)
+		radV := rand.IntN(v.TotalValue)
 		for _, item := range v.Items {
 			radV -= item.Value
 			if radV < 0 {

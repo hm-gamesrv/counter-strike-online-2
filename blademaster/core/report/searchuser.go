@@ -5,8 +5,8 @@ import (
 
 	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
 	. "github.com/KouKouChan/CSO2-Server/kerlong"
+	. "github.com/KouKouChan/CSO2-Server/logging"
 	. "github.com/KouKouChan/CSO2-Server/servermanager"
-	. "github.com/KouKouChan/CSO2-Server/verbose"
 )
 
 const (
@@ -30,7 +30,7 @@ func OnReportSearchUser(p *PacketData, client net.Conn) {
 	}
 	//发送返回数据包
 	var rst []byte
-	if IsExistsIngameName(pkt.Name) {
+	if NicknameExists(string(pkt.Name)) {
 		rst = BytesCombine(BuildHeader(uPtr.CurrentSequence, PacketTypeReport), BuildSearchResult(found))
 		SendPacket(rst, uPtr.CurrentConnection)
 		DebugInfo(2, "Send report-SearchResult-Found of destUser", string(pkt.Name), " to User", uPtr.UserName)

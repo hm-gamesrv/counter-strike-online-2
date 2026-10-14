@@ -1,7 +1,7 @@
 # ===================
 # 编译
 # ===================
-FROM golang:1.26-alpine AS builder
+FROM golang:1.27-alpine AS builder
 
 ENV GO111MODULE=on \
     GOPROXY=https://goproxy.cn,direct \
@@ -9,7 +9,6 @@ ENV GO111MODULE=on \
 
 WORKDIR /build
 
-# 先拷贝依赖清单，利用 Docker 层缓存
 COPY go.mod go.sum ./
 RUN go mod download
 
@@ -17,13 +16,7 @@ COPY . .
 
 # -tags timetzdata：嵌入时区数据库（alpine 无 /usr/share/zoneinfo）
 # -ldflags '-s -w'：去掉符号表，减小体积
-RUN go build -tags timetzdata -ldflags '-s -w' -o /out/CSO2-Server-bin .
-
-# exe 在 /app，资源必须在 /app/CSO2-Server/{assert,locales,database,configure}
-RUN mkdir -p /out/CSO2-Server/database \
-    && mkdir -p /out/CSO2-Server/configure \
-    && cp -r ./assert ./locales /out/CSO2-Server/ \
-    && cp ./configure/server.conf /out/CSO2-Server/configure/
+RUN go build -tags timetzdata -ldflags '-s -w' -trimpath -o /build/app.bin .
 
 # ===================
 # 主镜像
@@ -32,16 +25,19 @@ FROM alpine:3
 
 ENV TZ=Asia/Shanghai
 
+RUN apk add --no-cache tzdata ca-certificates
+
 RUN addgroup -g 1000 gamesrv \
     && adduser -u 1000 -D -G gamesrv -s /bin/sh gamesrv
-RUN mkdir -p /app && chown 1000:1000 /app
+RUN mkdir -p /app && chown 1000:1000 /app \
+    && mkdir -p /data && chown 1000:1000 /data
 
-COPY --from=builder --chown=1000:1000 /out /app
+COPY --from=builder --chown=1000:1000 /build/app.bin /app
 
-EXPOSE 1314/tcp 1315/tcp 30001/tcp 30002/udp
+EXPOSE 1315/tcp 30001/tcp 30002/udp
 
-VOLUME ["/app/CSO2-Server/database"]
+VOLUME ["/data"]
 
 WORKDIR /app
 USER 1000:1000
-CMD ["/app/CSO2-Server-bin"]
+CMD ["/app/app.bin"]

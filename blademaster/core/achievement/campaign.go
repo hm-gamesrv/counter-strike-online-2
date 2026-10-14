@@ -5,8 +5,8 @@ import (
 
 	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
 	. "github.com/KouKouChan/CSO2-Server/kerlong"
+	. "github.com/KouKouChan/CSO2-Server/logging"
 	. "github.com/KouKouChan/CSO2-Server/servermanager"
-	. "github.com/KouKouChan/CSO2-Server/verbose"
 )
 
 var (
@@ -39,27 +39,77 @@ func OnAchievementCampaign(p *PacketData, client net.Conn) {
 		SendPacket(rst, uPtr.CurrentConnection)
 		DebugInfo(1, "User", uPtr.UserName, "get achievement campaign id", pkt.CampaignId)
 	case Campaign_1:
-		reward := OutAchievementCampaign{0, 0, 0, 0, 0, 3000, uint8(len(RewardCapmgaign1)), RewardCapmgaign1, 0}
+		reward := OutAchievementCampaign{
+			Unk00:        0,
+			Unk01:        0,
+			RewardTitle:  0,
+			RewardIcon:   0,
+			RewardPoints: 0,
+			RewardXp:     3000,
+			NumOfItems:   uint8(len(RewardCapmgaign1)),
+			Items:        RewardCapmgaign1,
+			Unk02:        0,
+		}
 		rst := BytesCombine(BuildHeader(uPtr.CurrentSequence, PacketTypeAchievement), BuildAchievementCampaign(0x60, &reward, pkt.CampaignId))
 		SendPacket(rst, uPtr.CurrentConnection)
 		DebugInfo(1, "User", uPtr.UserName, "get achievement campaign id", pkt.CampaignId)
 	case Campaign_2:
-		reward := OutAchievementCampaign{0, 0, 0, 0, 5000, 0, uint8(len(RewardCapmgaign2)), RewardCapmgaign2, 0}
+		reward := OutAchievementCampaign{
+			Unk00:        0,
+			Unk01:        0,
+			RewardTitle:  0,
+			RewardIcon:   0,
+			RewardPoints: 5000,
+			RewardXp:     0,
+			NumOfItems:   uint8(len(RewardCapmgaign2)),
+			Items:        RewardCapmgaign2,
+			Unk02:        0,
+		}
 		rst := BytesCombine(BuildHeader(uPtr.CurrentSequence, PacketTypeAchievement), BuildAchievementCampaign(0x50, &reward, pkt.CampaignId))
 		SendPacket(rst, uPtr.CurrentConnection)
 		DebugInfo(1, "User", uPtr.UserName, "get achievement campaign id", pkt.CampaignId)
 	case Campaign_3:
-		reward := OutAchievementCampaign{0, 0, 0, 0, 0, 8000, uint8(len(RewardCapmgaign3)), RewardCapmgaign3, 0}
+		reward := OutAchievementCampaign{
+			Unk00:        0,
+			Unk01:        0,
+			RewardTitle:  0,
+			RewardIcon:   0,
+			RewardPoints: 0,
+			RewardXp:     8000,
+			NumOfItems:   uint8(len(RewardCapmgaign3)),
+			Items:        RewardCapmgaign3,
+			Unk02:        0,
+		}
 		rst := BytesCombine(BuildHeader(uPtr.CurrentSequence, PacketTypeAchievement), BuildAchievementCampaign(0x60, &reward, pkt.CampaignId))
 		SendPacket(rst, uPtr.CurrentConnection)
 		DebugInfo(1, "User", uPtr.UserName, "get achievement campaign id", pkt.CampaignId)
 	case Campaign_4:
-		reward := OutAchievementCampaign{0, 0, 0, 0, 0, 10000, uint8(len(RewardCapmgaign4)), RewardCapmgaign4, 0}
+		reward := OutAchievementCampaign{
+			Unk00:        0,
+			Unk01:        0,
+			RewardTitle:  0,
+			RewardIcon:   0,
+			RewardPoints: 0,
+			RewardXp:     10000,
+			NumOfItems:   uint8(len(RewardCapmgaign4)),
+			Items:        RewardCapmgaign4,
+			Unk02:        0,
+		}
 		rst := BytesCombine(BuildHeader(uPtr.CurrentSequence, PacketTypeAchievement), BuildAchievementCampaign(0x60, &reward, pkt.CampaignId))
 		SendPacket(rst, uPtr.CurrentConnection)
 		DebugInfo(1, "User", uPtr.UserName, "get achievement campaign id", pkt.CampaignId)
 	case Campaign_5:
-		reward := OutAchievementCampaign{0, 0, 0, 0, 0, 0, uint8(len(RewardCapmgaign5)), RewardCapmgaign5, 0}
+		reward := OutAchievementCampaign{
+			Unk00:        0,
+			Unk01:        0,
+			RewardTitle:  0,
+			RewardIcon:   0,
+			RewardPoints: 0,
+			RewardXp:     0,
+			NumOfItems:   uint8(len(RewardCapmgaign5)),
+			Items:        RewardCapmgaign5,
+			Unk02:        0,
+		}
 		rst := BytesCombine(BuildHeader(uPtr.CurrentSequence, PacketTypeAchievement), BuildAchievementCampaign(0x40, &reward, pkt.CampaignId))
 		SendPacket(rst, uPtr.CurrentConnection)
 		DebugInfo(1, "User", uPtr.UserName, "get achievement campaign id", pkt.CampaignId)
@@ -132,6 +182,6 @@ func InitCampaignReward() {
 	// 	}
 	// }
 	for _, v := range BoxIDs {
-		RewardCapmgaign5 = append(RewardCapmgaign5, OutAchievementCampaignItems{v, 1, 0})
+		RewardCapmgaign5 = append(RewardCapmgaign5, OutAchievementCampaignItems{ItemId: v, Ammount: 1, TimeLimited: 0})
 	}
 }

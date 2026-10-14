@@ -4,15 +4,15 @@ import (
 	"bufio"
 	"os"
 	"time"
-)
 
-var (
-	ReportPath string
+	. "github.com/KouKouChan/CSO2-Server/servermanager"
 )
 
 func SaveReport(name, reporttype string, msg []byte) {
 	fd_time := time.Now().Format("2006-01-02 15:04:05")
 
+	// ReportPath comes from the storage layer so that every piece of persistent
+	// state follows DATA_DIR.
 	fl, err := os.OpenFile(ReportPath+name+".txt", os.O_APPEND|os.O_CREATE, 0644)
 	if err != nil {
 		return

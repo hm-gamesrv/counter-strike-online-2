@@ -1,26 +1,23 @@
 package holepunch
 
 import (
-	"fmt"
 	"net"
 
 	. "github.com/KouKouChan/CSO2-Server/blademaster/core/udp"
 	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
 	. "github.com/KouKouChan/CSO2-Server/kerlong"
+	. "github.com/KouKouChan/CSO2-Server/logging"
 	. "github.com/KouKouChan/CSO2-Server/servermanager"
-	. "github.com/KouKouChan/CSO2-Server/verbose"
 )
 
 func StartHolePunchServer(port string, server *net.UDPConn) {
 	defer server.Close()
 	defer func() {
 		if err := recover(); err != nil {
-			fmt.Println("UDP server suffered a fault !")
-			fmt.Println("error:", err)
-			fmt.Println("Fault end!")
+			Error("UDP holepunch server suffered a fault:", err)
 		}
 	}()
-	fmt.Println("Server UDPholepunch is running at", "[AnyAdapter]:"+port)
+	Info("Server UDPholepunch is running at [AnyAdapter]:" + port)
 	for {
 		data := make([]byte, 1024)
 		n, ClientAddr, err := server.ReadFromUDP(data)
@@ -32,13 +29,11 @@ func StartHolePunchServer(port string, server *net.UDPConn) {
 	}
 }
 
-//RecvHolePunchMessage 处理收到的包
+// RecvHolePunchMessage 处理收到的包
 func RecvHolePunchMessage(data []byte, len int, client *net.UDPAddr, server *net.UDPConn) {
 	defer func() {
 		if err := recover(); err != nil {
-			fmt.Println("Recv UDP packet suffered a fault !")
-			fmt.Println(err)
-			fmt.Println("Fault end!")
+			Error("Receiving a UDP packet suffered a fault:", err)
 			return
 		}
 	}()

@@ -4,7 +4,7 @@ import (
 	"sync"
 
 	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	. "github.com/KouKouChan/CSO2-Server/verbose"
+	. "github.com/KouKouChan/CSO2-Server/logging"
 )
 
 type RM struct {
@@ -20,7 +20,7 @@ var (
 	}
 )
 
-//getNewRoomNumber() 获取房间在某个频道下的标号
+// getNewRoomNumber() 获取房间在某个频道下的标号
 func GetNewRoomID(chl ChannelInfo) uint16 {
 	if chl.RoomNum > MAXROOMNUM {
 		DebugInfo(2, "Error : Room is too much ! Unable to create more !")
@@ -38,7 +38,7 @@ func GetNewRoomID(chl ChannelInfo) uint16 {
 	return 0
 }
 
-//添加房间,一次只能一个协程修改该频道
+// 添加房间,一次只能一个协程修改该频道
 func AddRoomToManager(room *Room) bool {
 	if room.Id <= 0 {
 		DebugInfo(2, "RoomManager Error: ID of room is illegal !")
@@ -54,17 +54,21 @@ func AddRoomToManager(room *Room) bool {
 	return true
 }
 
-//删除频道房间
+// 删除频道房间
 func DelRoomFromManager(roomid uint16) bool {
 	if roomid <= 0 {
 		DebugInfo(2, "RoomManager Error: ID of room is illegal !")
 		return false
 	}
-	if _, ok := RoomsManager.Rooms[roomid]; ok {
-		RoomsManager.Lock.Lock()
-		defer RoomsManager.Lock.Unlock()
-		delete(RoomsManager.Rooms, roomid)
-		return true
+
+	// The existence check has to happen while the write lock is held,
+	// otherwise two goroutines can both decide the room exists.
+	RoomsManager.Lock.Lock()
+	defer RoomsManager.Lock.Unlock()
+
+	if _, ok := RoomsManager.Rooms[roomid]; !ok {
+		return false
 	}
-	return false
+	delete(RoomsManager.Rooms, roomid)
+	return true
 }

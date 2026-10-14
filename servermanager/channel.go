@@ -4,28 +4,28 @@ import (
 	"sync"
 
 	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	. "github.com/KouKouChan/CSO2-Server/verbose"
+	. "github.com/KouKouChan/CSO2-Server/logging"
 )
 
 func NewChannelInfo(name []byte, chlsrv ChannelServer) ChannelInfo {
 	var mutex sync.Mutex
 	return ChannelInfo{
-		GetNewChannelID(chlsrv),
-		name,
-		0xff,
-		0xff,
-		0xff,
-		ChannelTypeFree,
-		ChannelStatusNormal,
-		1,
-		0,
-		map[uint16]*Room{},
-		map[uint8]uint16{},
-		&mutex,
+		ChannelID:     GetNewChannelID(chlsrv),
+		ChannelName:   name,
+		Unk00:         0xff,
+		Unk01:         0xff,
+		Unk02:         0xff,
+		ChannelType:   ChannelTypeFree,
+		ChannelStatus: ChannelStatusNormal,
+		NextRoomID:    1,
+		RoomNum:       0,
+		Rooms:         map[uint16]*Room{},
+		RoomNums:      map[uint8]uint16{},
+		ChannelMutex:  &mutex,
 	}
 }
 
-//getNewChannelID() 暂定
+// getNewChannelID() 暂定
 func GetNewChannelID(chlsrv ChannelServer) uint8 {
 	if chlsrv.ChannelCount > MAXCHANNELNUM {
 		DebugInfo(2, "Channel is too much ! Unable to create more !")
@@ -47,7 +47,7 @@ func GetNewChannelID(chlsrv ChannelServer) uint8 {
 	return 0
 }
 
-//通过ID获取频道
+// 通过ID获取频道
 func GetChannelWithID(id uint8, chlsrv *ChannelServer) *ChannelInfo {
 	if chlsrv == nil {
 		return nil
@@ -64,15 +64,15 @@ func GetChannelWithID(id uint8, chlsrv *ChannelServer) *ChannelInfo {
 	return nil
 }
 
-//添加房间,一次只能一个协程修改该频道
+// 添加房间,一次只能一个协程修改该频道
 func AddChannelRoom(room *Room, chlid uint8, chlsrvid uint8) bool {
 	chlsrv := GetChannelServerWithID(chlsrvid)
-	if chlsrv.ServerIndex <= 0 {
+	if chlsrv == nil || chlsrv.ServerIndex <= 0 {
 		DebugInfo(2, "Add room to a null channelServer!")
 		return false
 	}
 	chl := GetChannelWithID(chlid, chlsrv)
-	if chl.ChannelID <= 0 {
+	if chl == nil || chl.ChannelID <= 0 {
 		DebugInfo(2, "Add room to a null channel!")
 		return false
 	}
@@ -105,15 +105,15 @@ func AddChannelRoom(room *Room, chlid uint8, chlsrvid uint8) bool {
 	return true
 }
 
-//删除频道房间
+// 删除频道房间
 func DelChannelRoom(roomid uint16, chlid uint8, chlsrvid uint8) bool {
 	chlsrv := GetChannelServerWithID(chlsrvid)
-	if chlsrv.ServerIndex <= 0 {
+	if chlsrv == nil || chlsrv.ServerIndex <= 0 {
 		DebugInfo(2, "Remove room to a null channelServer!")
 		return false
 	}
 	chl := GetChannelWithID(chlid, chlsrv)
-	if chl.ChannelID <= 0 {
+	if chl == nil || chl.ChannelID <= 0 {
 		DebugInfo(2, "Remove room to a null channel!")
 		return false
 	}
@@ -140,9 +140,9 @@ func DelChannelRoom(roomid uint16, chlid uint8, chlsrvid uint8) bool {
 	return false
 }
 
-//快速删除频道房间,需预先取得锁
+// 快速删除频道房间,需预先取得锁
 func DelChannelRoomQuick(roomid uint16, chl *ChannelInfo) bool {
-	if chl.ChannelID <= 0 {
+	if chl == nil || chl.ChannelID <= 0 {
 		DebugInfo(2, "Remove room to a null channel!")
 		return false
 	}
@@ -167,7 +167,7 @@ func DelChannelRoomQuick(roomid uint16, chl *ChannelInfo) bool {
 	return false
 }
 
-//getNewRoomNumber() 获取房间在某个频道下的标号
+// getNewRoomNumber() 获取房间在某个频道下的标号
 func GetNewRoomNumber(chl ChannelInfo) uint8 {
 	if chl.RoomNum > MAXCHANNELROOMNUM {
 		DebugInfo(2, "Error : Room is too much ! Unable to create more !")
@@ -191,11 +191,11 @@ func GetRoomFromID(chlsrvID uint8, chlID uint8, roomID uint16) *Room {
 		return nil
 	}
 	chlsrv := GetChannelServerWithID(chlsrvID)
-	if chlsrv.ServerIndex <= 0 {
+	if chlsrv == nil || chlsrv.ServerIndex <= 0 {
 		return nil
 	}
 	chl := GetChannelWithID(chlID, chlsrv)
-	if chl.ChannelID <= 0 || chl.RoomNum <= 0 {
+	if chl == nil || chl.ChannelID <= 0 || chl.RoomNum <= 0 {
 		return nil
 	}
 	chl.ChannelMutex.Lock()

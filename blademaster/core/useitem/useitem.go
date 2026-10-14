@@ -1,16 +1,15 @@
 package useitem
 
 import (
-	"math/rand"
+	"math/rand/v2"
 	"net"
-	"time"
 
 	. "github.com/KouKouChan/CSO2-Server/blademaster/core/inventory"
 	. "github.com/KouKouChan/CSO2-Server/blademaster/core/message"
 	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
 	. "github.com/KouKouChan/CSO2-Server/kerlong"
+	. "github.com/KouKouChan/CSO2-Server/logging"
 	. "github.com/KouKouChan/CSO2-Server/servermanager"
-	. "github.com/KouKouChan/CSO2-Server/verbose"
 )
 
 const (
@@ -40,13 +39,13 @@ func OnItemUse(p *PacketData, client net.Conn) {
 	itemID := uPtr.GetItemIDBySeq(pkt.ItemSeq)
 	switch itemID {
 	case 2001: //改名卡
-		if IsExistsIngameName(pkt.String) {
+		if NicknameExists(string(pkt.String)) {
 			OnSendMessage(uPtr.CurrentSequence, uPtr.CurrentConnection, MessageDialogBox, CSO2_POPUP_NICKNAME_ALREADY_EXIST)
 			DebugInfo(2, "User", uPtr.UserName, "try change nickname to", string(pkt.String), "but this name already exists")
 			return
 		}
 
-		if err := DelOldNickNameFile(uPtr.IngameName); err != nil {
+		if err := DeleteNicknameIndex(uPtr.IngameName); err != nil {
 			OnSendMessage(uPtr.CurrentSequence, uPtr.CurrentConnection, MessageDialogBox, CSO2_UI_RAMDOMBOX_ALERT_000)
 			DebugInfo(2, "User", uPtr.UserName, "try change nickname to", string(pkt.String), "failed", err)
 			return
@@ -132,7 +131,7 @@ func OnItemUse(p *PacketData, client net.Conn) {
 	}
 
 	//UserInfo部分
-	rst := BytesCombine(BuildHeader(uPtr.CurrentSequence, PacketTypeUserInfo), BuildUserInfo(0XFFFFFFFF, NewUserInfo(uPtr), uPtr.Userid, true))
+	rst := BytesCombine(BuildHeader(uPtr.CurrentSequence, PacketTypeUserInfo), BuildUserInfo(0xFFFFFFFF, NewUserInfo(uPtr), uPtr.Userid, true))
 	SendPacket(rst, uPtr.CurrentConnection)
 }
 
@@ -157,14 +156,13 @@ func buildNickNameChange() []byte {
 }
 
 func UsePointLotto(itemid uint32) uint64 {
-	rand.Seed(time.Now().UnixNano())
 	switch itemid {
 	case 2008: //银币 id 2008
-		return uint64(lotto_base + rand.Intn(lotto_max))
+		return uint64(lotto_base + rand.IntN(lotto_max))
 	case 2013: //铜币
-		return uint64(lotto_event_base + rand.Intn(lotto_event_max))
+		return uint64(lotto_event_base + rand.IntN(lotto_event_max))
 	case 2014: //金币
-		return uint64(lotto_gold_base + rand.Intn(lotto_gold_max))
+		return uint64(lotto_gold_base + rand.IntN(lotto_gold_max))
 	default:
 		return 0
 	}

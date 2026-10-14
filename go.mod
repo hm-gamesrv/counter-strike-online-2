@@ -1,19 +1,14 @@
 module github.com/KouKouChan/CSO2-Server
 
-go 1.25.0
+go 1.27.0
 
 require (
-	github.com/garyburd/redigo v1.6.0
-	github.com/go-sql-driver/mysql v1.5.0
-	github.com/willf/bitset v1.1.11
-	golang.org/x/text v0.41.0
-	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
-	gopkg.in/ini.v1 v1.57.0
-)
+	// YAML for the configuration file. It is the only format the project needs
+	// a library for; everything else is standard library.
+	go.yaml.in/yaml/v3 v3.0.4
 
-require (
-	github.com/smartystreets/goconvey v1.6.4 // indirect
-	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
+	// Character-set conversion for non-UTF-8 clients (GBK / Big5 / EUC-KR /
+	// Shift_JIS). This replaces the old cgo-based github.com/djimenez/iconv-go,
+	// which made cross-compilation and minimal container images painful.
+	golang.org/x/text v0.37.0
 )
-
-replace golang.org/x/text v0.3.3 => github.com/golang/text v0.3.3

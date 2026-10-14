@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"math"
 	"net"
@@ -12,7 +11,7 @@ import (
 	"time"
 
 	. "github.com/KouKouChan/CSO2-Server/blademaster/Exp"
-	. "github.com/KouKouChan/CSO2-Server/blademaster/GMconsole"
+	. "github.com/KouKouChan/CSO2-Server/blademaster/adminapi"
 	. "github.com/KouKouChan/CSO2-Server/blademaster/core/achievement"
 	. "github.com/KouKouChan/CSO2-Server/blademaster/core/automatch"
 	. "github.com/KouKouChan/CSO2-Server/blademaster/core/chat"
@@ -33,20 +32,17 @@ import (
 	. "github.com/KouKouChan/CSO2-Server/blademaster/core/user"
 	. "github.com/KouKouChan/CSO2-Server/blademaster/core/version"
 	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	. "github.com/KouKouChan/CSO2-Server/configure"
-	. "github.com/KouKouChan/CSO2-Server/database/mysql"
-	. "github.com/KouKouChan/CSO2-Server/database/redis"
+	"github.com/KouKouChan/CSO2-Server/builtin"
+	. "github.com/KouKouChan/CSO2-Server/config"
 	. "github.com/KouKouChan/CSO2-Server/kerlong"
 	. "github.com/KouKouChan/CSO2-Server/kerlong/encode"
+	. "github.com/KouKouChan/CSO2-Server/logging"
 	. "github.com/KouKouChan/CSO2-Server/servermanager"
-	. "github.com/KouKouChan/CSO2-Server/verbose"
-	. "github.com/KouKouChan/CSO2-Server/web/register"
-	_ "github.com/go-sql-driver/mysql"
 )
 
 var (
 	//SERVERVERSION 版本号
-	SERVERVERSION = "v0.8.0"
+	SERVERVERSION = ServerVersion
 )
 
 func ReadHead(client net.Conn) ([]byte, bool) {
@@ -95,150 +91,98 @@ func ReadData(client net.Conn, len uint16) ([]byte, bool) {
 func main() {
 	defer func() {
 		if err := recover(); err != nil {
-			fmt.Println("检测到异常")
-			fmt.Println("error:", err)
-			fmt.Println("异常结束")
+			// A panic during startup means the server cannot run at all, so the
+			// log record is emitted and the process must leave a non-zero exit
+			// status: a supervisor (systemd, Docker, Kubernetes) that sees 0
+			// would treat a broken configuration as a clean shutdown and
+			// neither restart nor alert.
+			Error("unhandled panic in main", err)
+			os.Exit(1)
 		}
 	}()
 
-	fmt.Println("Counter-Strike Online 2 Server", SERVERVERSION)
-	fmt.Println("Initializing process ...")
+	Info("Counter-Strike Online 2 Server", SERVERVERSION)
+	Info("Initializing process ...")
 
-	for k, v := range os.Args {
-		if v == "-console" {
-			os.Args = append(os.Args[:k], os.Args[k+1:]...)
-			// 定义几个变量，用于接收命令行的参数值
-			var user string
-			var password string
-			var host string
-			var port string
-			// &user 就是接收命令行中输入 -u 后面的参数值，其他同理
-			flag.StringVar(&user, "username", "admin", "账号，默认为admin")
-			flag.StringVar(&password, "password", "cso2server123", "密码，默认为cso2server123")
-			flag.StringVar(&host, "ip", "localhost", "主机名，默认为localhost")
-			flag.StringVar(&port, "port", "1315", "端口号，默认为1315")
-			// 解析命令行参数写入注册的flag里
-			flag.Parse()
-
-			ToConsoleHost(user, password, host, port)
-
-			return
-		}
-	}
 	//get server exe path
 	path, err := GetExePath()
 	if err != nil {
 		panic(err)
 	}
-	DBPath = path + "/CSO2-Server/database/json/"
-	ReportPath = path + "/CSO2-Server/database/report/"
 
-	//check folder
-	checkFolder(path)
+	// Configuration, locales and game data are compiled into the binary. The
+	// only thing read from next to the executable is an optional "builtin"
+	// folder holding overrides.
+	builtin.Init(path)
+
+	// Deployment settings come from the environment: ports, locale, data dir.
+	// A relative DATA_DIR is resolved against the working directory, which is
+	// the usual meaning for an environment variable; the resolved path is
+	// logged below either way.
+	Env.ReadEnv(path)
+
+	if err = InitDataDir(Env.DataDir); err != nil {
+		panic(err)
+	}
+	Info("Persistent data directory is", DataDir)
+	Info("Environment:", Env.DescribeEnv())
 
 	//read configure
-	Conf.InitConf(path)
+	Conf.InitConf(Env.DataDir)
 
-	InitCSV(path)
+	InitCSV()
 	FullInventoryItem = CreateFullInventoryItem()
 	FullInventoryReply = BuildFullInventoryInfo()
 	InitCampaignReward()
-	if Conf.EnableShop == 1 {
+	if Conf.EnableShop {
 		InitShopReply()
 	}
 	InitBoxReply()
 
 	//read locales
-	Locales.InitMotd(path)
-	if Locales.InitLocales(path) {
+	Locales.InitMotd()
+	if Locales.InitLocales() {
 		SetLocales()
 	}
 
 	//set val
 	Level = Conf.DebugLevel
-	LogFile = Conf.LogFile
 	if Conf.MaxUsers <= 0 {
 		MaxUsers = math.MaxUint32
 	} else {
 		MaxUsers = Conf.MaxUsers
 	}
 
-	//init Logger
-	if LogFile != 0 {
-		InitLoger(path, "CSO2-Server.log")
-	}
-
 	//init TCP
-	server, err := net.Listen("tcp", fmt.Sprintf(":%d", Conf.PORT))
+	server, err := net.Listen("tcp", fmt.Sprintf(":%d", Env.TCPPort))
 	if err != nil {
-		fmt.Println("Init tcp socket error !\n")
+		Error("Cannot listen on TCP port", Env.TCPPort, ":", err)
 		panic(err)
 	}
 	defer server.Close()
 
 	//init UDP
-	udpAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf(":%d", Conf.HolePunchPort))
+	udpAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf(":%d", Env.UDPPort))
 	if err != nil {
-		fmt.Println("Init udp addr error !\n")
+		Error("Cannot resolve UDP address:", err)
 		panic(err)
 	}
 	holepunchserver, err := net.ListenUDP("udp", udpAddr)
 	if err != nil {
-		fmt.Println("Init udp socket error !\n")
+		Error("Cannot listen on UDP port", Env.UDPPort, ":", err)
 		panic(err)
 	}
 	defer holepunchserver.Close()
 
-	//Init Database
-	if Conf.EnableDataBase != 0 {
-		DB, err = InitDatabase(path)
-		if err != nil {
-			fmt.Println("Init database failed !", err)
-
-			clearDB()
-		} else {
-			fmt.Println("Checking database ...")
-			if err = CheckDataBaseTable(DB, path); err == nil {
-				DB.SetMaxIdleConns(5)
-				DB.SetMaxOpenConns(10)
-
-				fmt.Println("Database connected !")
-
-				if err = DB.Ping(); err != nil {
-					fmt.Println("Database connect failed !", err)
-					DB.Close()
-					clearDB()
-				} else {
-					defer DB.Close()
-				}
-
-			} else {
-				fmt.Println("Checking database failed !", err)
-				DB.Close()
-				clearDB()
-			}
-		}
-		InitBloomFilter()
-		Redis, err = InitRedis(Conf.RedisIP + ":" + strconv.Itoa(int(Conf.RedisPort)))
-		if err != nil {
-			fmt.Println("connect to redis server failed !", err)
-		} else {
-			fmt.Println("Redis server connected !")
-			defer Redis.Close()
-		}
-	} else {
-		clearDB()
-	}
-
 	//Init converter
-	InitConverter(Conf.CodePage)
+	InitConverter(Env.CodePage)
 
 	//Init MainServer Info
 	MainServer = NewMainServer()
 	InitExpTotal()
 
 	//Start UDP Server
-	go StartHolePunchServer(strconv.Itoa(int(Conf.HolePunchPort)), holepunchserver)
+	go StartHolePunchServer(strconv.Itoa(int(Env.UDPPort)), holepunchserver)
 
 	//Start TCP Server
 	go TCPServer(server)
@@ -252,43 +196,52 @@ func main() {
 	//Start SaveUserData Service
 	go SaveAllUsersService()
 
-	//Start Register Server
-	if Conf.EnableRegister != 0 {
-		go OnRegister(path)
+	//Start admin web API
+	if Env.EnableAdmin {
+		go Start()
+	} else {
+		Info("Admin web API is disabled (ENABLE_ADMIN=false)")
 	}
 
-	//Start console server
-	if Conf.EnableConsole != 0 {
-		go InitGMconsole()
-	}
-
-	ch := make(chan os.Signal)
+	// A single SIGINT or SIGTERM shuts the server down: accounts are flushed to
+	// disk first, so one deliberate signal is enough.
+	//
+	// SIGTERM matters even on a development machine: `docker stop` and systemd
+	// both send it, and ignoring it would mean the process is killed after a
+	// timeout without ever saving.
+	ch := make(chan os.Signal, 1)
+	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
+	defer signal.Stop(ch)
 	defer close(ch)
 
-	signal.Notify(ch, syscall.SIGINT)
-	_ = <-ch
+	awaitShutdown(ch)
+}
+
+// awaitShutdown blocks until one shutdown signal arrives, flushes every online
+// account to disk and returns.
+//
+// It is a separate function so that the "one signal is enough, and the save
+// happens before we exit" behaviour can be tested without signalling the test
+// process itself.
+func awaitShutdown(ch <-chan os.Signal) {
+	sig := <-ch
+	Info("Shutdown requested (" + sig.String() + "), saving all online accounts ...")
 
 	if SaveAllUsers() {
-		fmt.Println("Save all users data success !")
+		Info("Saved all online users, shutting down")
 	} else {
-		fmt.Println("Save all users data failed !")
+		Error("Failed to save all online users, shutting down anyway")
 	}
-	fmt.Println("Press CTRL+C again to close server")
-
-	signal.Notify(ch, syscall.SIGINT)
-	_ = <-ch
 }
 
 func TCPServer(server net.Listener) {
 	defer func() {
 		if err := recover(); err != nil {
-			fmt.Println("TCP server suffered a fault !")
-			fmt.Println("error:", err)
-			fmt.Println("Fault end!")
+			Error("TCP server suffered a fault:", err)
 		}
 	}()
 
-	fmt.Println("Server is running at", "[AnyAdapter]:"+strconv.Itoa(int(Conf.PORT)))
+	Info("Server is running at [AnyAdapter]:" + strconv.Itoa(int(Env.TCPPort)))
 	for {
 		client, err := server.Accept()
 		if err != nil {
@@ -300,7 +253,7 @@ func TCPServer(server net.Listener) {
 	}
 }
 
-//RecvMessage 循环处理收到的包
+// RecvMessage 循环处理收到的包
 func RecvMessage(client net.Conn) {
 	var seq uint8 = 0
 	var dataPacket PacketData
@@ -309,10 +262,8 @@ func RecvMessage(client net.Conn) {
 	defer func() {
 		if err := recover(); err != nil {
 			OnSendMessage(&seq, client, MessageDialogBox, GAME_SERVER_ERROR)
-			fmt.Println("Client", client.RemoteAddr().String(), "suffered a fault !")
-			fmt.Println(err)
-			fmt.Println("dump data", dataPacket.Data, "offset:", dataPacket.CurOffset)
-			fmt.Println("Fault end!")
+			Error("Client", client.RemoteAddr().String(), "suffered a fault:", err,
+				"dump data", dataPacket.Data, "offset:", dataPacket.CurOffset)
 			OnLeaveRoom(client, true)
 			DelUserWithConn(client)
 		}
@@ -335,13 +286,7 @@ func RecvMessage(client net.Conn) {
 		if !err {
 			goto close
 		}
-		dataPacket = PacketData{
-			bytes,
-			headPacket.Sequence,
-			headPacket.Length,
-			bytes[0],
-			1,
-		}
+		dataPacket = PacketData{Data: bytes, Sequence: headPacket.Sequence, Length: headPacket.Length, Id: bytes[0], CurOffset: 1}
 
 		//执行功能
 		switch dataPacket.Id {
@@ -400,8 +345,8 @@ func BroadcastRoomList() {
 		timer := time.NewTimer(6 * time.Second)
 		<-timer.C
 
-		for _, v := range UsersManager.Users {
-			if v != nil && v.CurrentChannelIndex > 0 && v.CurrentRoomId <= 0 {
+		for _, v := range UsersManager.SnapshotUsers() {
+			if v.CurrentChannelIndex > 0 && v.CurrentRoomId <= 0 {
 				OnBroadcastRoomList(v.CurrentChannelServerIndex, v.CurrentChannelIndex, v)
 			}
 		}
@@ -414,15 +359,13 @@ func CheckOutdatedItemService() {
 		timer := time.NewTimer(3 * time.Minute)
 		<-timer.C
 
-		for _, v := range UsersManager.Users {
-			if v != nil {
-				idxs := v.CheckOutdatedItemIngame()
-				DebugInfo(1, "Find", len(idxs), "outdated items for user", v.UserName)
-				for _, idx := range idxs {
-					rst := BytesCombine(BuildHeader(v.CurrentSequence, PacketTypeInventory_Create),
-						BuildInventoryInfoSingle(v, 0, idx))
-					SendPacket(rst, v.CurrentConnection)
-				}
+		for _, v := range UsersManager.SnapshotUsers() {
+			idxs := v.CheckOutdatedItemIngame()
+			DebugInfo(1, "Find", len(idxs), "outdated items for user", v.UserName)
+			for _, idx := range idxs {
+				rst := BytesCombine(BuildHeader(v.CurrentSequence, PacketTypeInventory_Create),
+					BuildInventoryInfoSingle(v, 0, idx))
+				SendPacket(rst, v.CurrentConnection)
 			}
 		}
 
@@ -440,32 +383,4 @@ func SaveAllUsersService() {
 			DebugInfo(1, "Save all users data failed !")
 		}
 	}
-}
-
-func checkFolder(path string) {
-	rst, _ := PathExists(DBPath)
-	if !rst {
-		err := os.Mkdir(DBPath, os.ModePerm)
-		if err != nil {
-			fmt.Println("mkdir1 failed!", err)
-		} else {
-			fmt.Println("mkdir1 success!")
-		}
-	}
-
-	folderpath := path + "/CSO2-Server/database/report/"
-	rst, _ = PathExists(folderpath)
-	if !rst {
-		err := os.Mkdir(folderpath, os.ModePerm)
-		if err != nil {
-			fmt.Println("mkdir2 failed!", err)
-		} else {
-			fmt.Println("mkdir2 success!")
-		}
-	}
-}
-
-func clearDB() {
-	Conf.EnableDataBase = 0
-	DB = nil
 }

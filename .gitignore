@@ -1,57 +1,55 @@
-# AI
+# =========================
+# AI 辅助工具
+# =========================
 .agents
 .codex
 .claude
 
-# Windows image file caches
+# =========================
+# 编辑器与 IDE
+# =========================
+.idea
+*.iml
+
+# =========================
+# 操作系统
+# =========================
+# Windows
 Thumbs.db
 ehthumbs.db
-
-# Folder config file
 Desktop.ini
-
-# Recycle Bin used on file shares
 $RECYCLE.BIN/
-
-# Windows Installer files
 *.cab
 *.msi
 *.msm
 *.msp
 
-# =========================
-# Operating System Files
-# =========================
-
-# OSX
-# =========================
-
+# macOS
 .DS_Store
 .AppleDouble
 .LSOverride
-
-# Icon must end with two \r
 Icon
-
-
-# Thumbnails
 ._*
-
-# Files that might appear on external disk
 .Spotlight-V100
 .Trashes
-
-# Directories potentially created on remote AFP share
 .AppleDB
 .AppleDesktop
 Network Trash Folder
 Temporary Items
 .apdisk
 
+# =========================
+# 本项目
+# =========================
+# 上游参考仓库（只读对照用，约 132 MB，不属于本项目源码）
+/.ref/
 
-.idea
-*.iml
-target
+# 运行期数据：账号文档与举报记录。玩家数据绝不入库。
+/data/
 
-/database/json
-/database/report
+# 本地构建产物
+/.dist/
+/CSO2-Server
+/CSO2-Server.exe
+/counter-strike-online-2
+/*.exe

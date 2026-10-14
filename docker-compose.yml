@@ -1,0 +1,44 @@
+services:
+    cso2-server:
+        container_name: cso2-server
+        # 就地构建并打上 GHCR 同名 tag；只想拉现成镜像就去掉 build: 这一行。
+        build: .
+        image: ghcr.io/hm-gamesrv/counter-strike-online-2:latest
+        ports:
+            - 1315:1315
+            - 30001:30001
+            - 30002:30002/udp
+        environment:
+            # Account documents end up under ./data/users/, and an optional
+            # ./data/server.yaml overrides the compiled-in game settings.
+            DATA_DIR: /data
+
+            # Admin web API bearer token: 16-128 characters of letters, digits
+            # and underscores. Export it in your shell first, e.g.
+            #   export ADMIN_TOKEN=ChangeMe_0123456789
+            # Without it the admin service refuses to start.
+            ADMIN_TOKEN: ${ADMIN_TOKEN:?set ADMIN_TOKEN in your environment}
+
+            # Deployment settings. Defaults are shown; uncomment to change.
+            # TCP_PORT: 30001
+            # UDP_PORT: 30002
+            # ADMIN_PORT: 1315
+            # ENABLE_ADMIN: "true"
+            # LOCALE: zh-cn          # zh-cn, zh-tw, en-us, ko-kr, tr-tur, global
+            # CODE_PAGE: gbk         # normally derived from LOCALE
+
+            # Gameplay settings live in ./data/server.yaml instead, so they can
+            # be edited without recreating the container:
+            #   server:
+            #     max_users: 0
+            #     enable_shop: true
+            #     unlock_all_weapons: true
+            #   debug:
+            #     level: 2
+        volumes:
+            # 容器以 UID/GID 1000 运行，宿主机目录必须对 1000 可写。
+            # 目录不存在时 Docker 会以 root 创建它，容器随即启动失败：
+            #   unhandled panic in main mkdir /data/users: permission denied
+            # 首次使用请先 mkdir -p data；宿主 uid 不是 1000 时再
+            # sudo chown 1000:1000 data。
+            - ./data:/data

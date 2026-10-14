@@ -1,10 +1,12 @@
 package kerlong
 
-import "fmt"
+import (
+	"github.com/KouKouChan/CSO2-Server/logging"
+)
 
-//CheckErr 有错误就显示
+// CheckErr 有错误就显示
 func CheckErr(err error) {
 	if err != nil {
-		fmt.Println(err)
+		logging.Error(err)
 	}
 }

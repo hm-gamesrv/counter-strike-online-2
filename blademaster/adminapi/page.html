@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="light dark">
+<title>CSO2 · Console</title>
+<link rel="stylesheet" href="/web/console.css">
+<script type="module" src="/web/app.js"></script>
+</head>
+<body>
+<a class="skip" href="#main" data-i18n="skip"></a>
+<aside class="sidebar">
+  <a class="brand" href="#overview"><span class="brand-icon">C<span>2</span></span><span>CSO2<small data-i18n="console"></small></span></a>
+  <span class="nav-label" data-i18n="workspace"></span>
+  <nav aria-label="Navigation">
+    <a href="#overview" data-view="overview"><span aria-hidden="true">◈</span><span data-i18n="overview"></span></a>
+    <a href="#players" data-view="players"><span aria-hidden="true">◎</span><span data-i18n="players"></span><span id="navCount" class="nav-count">—</span></a>
+    <a href="#accounts" data-view="accounts"><span aria-hidden="true">▤</span><span data-i18n="accounts"></span></a>
+    <a href="#operations" data-view="operations"><span aria-hidden="true">⚙</span><span data-i18n="operations"></span></a>
+    <a href="#activity" data-view="activity"><span aria-hidden="true">≡</span><span data-i18n="activity"></span></a>
+  </nav>
+  <div class="sidebar-footer"><span class="dot"></span><span data-i18n="privateConsole"></span><small>Counter-Strike Online 2</small></div>
+</aside>
+<div class="workspace">
+<header class="topbar">
+  <span class="breadcrumb">CSO2 <span>/</span> <span data-i18n="console"></span></span>
+  <div class="top-actions">
+    <span id="connection" class="badge" role="status"></span>
+    <select id="language" aria-label="Language"><option value="zh">中文</option><option value="en">English</option></select>
+    <select id="theme" data-aria="theme"><option value="system" data-i18n="system"></option><option value="light" data-i18n="light"></option><option value="dark" data-i18n="dark"></option></select>
+    <button id="sessionBtn" class="icon-button" data-i18n="connect"></button>
+  </div>
+</header>
+<main id="main" tabindex="-1">
+  <div class="page-heading"><div><p class="eyebrow" data-i18n="serverControl"></p><h1 id="pageTitle"></h1><p id="pageDescription" class="muted"></p></div><button id="refreshBtn"><span aria-hidden="true">↻</span> <span data-i18n="refresh"></span></button></div>
+  <div id="notice" class="notice" role="status"><span data-i18n="connectHint"></span><button id="openLogin" class="text-button" data-i18n="connect"></button></div>
+  <section id="view-overview" class="view">
+    <div class="stats">
+      <article class="metric"><span class="metric-icon">◎</span><span data-i18n="players"></span><strong id="metricOnline">—</strong><small id="metricCapacity" class="muted" data-i18n="waiting"></small></article>
+      <article class="metric"><span class="metric-icon">▤</span><span data-i18n="totalAccounts"></span><strong id="metricAccounts">—</strong><small data-i18n="persistentAccounts"></small></article>
+      <article class="metric"><span class="metric-icon">◷</span><span data-i18n="uptime"></span><strong id="metricUptime">—</strong><small data-i18n="sinceAdminStart"></small></article>
+      <article class="metric"><span class="metric-icon">◇</span><span data-i18n="version"></span><strong id="metricVersion">—</strong><small data-i18n="gameServer"></small></article>
+    </div>
+    <div class="overview-grid">
+      <article class="panel"><div class="panel-heading"><div><h2 data-i18n="serverDetails"></h2><p data-i18n="detailsDescription"></p></div><span class="tag">INSTANCE 01</span></div><dl id="serverDetails" class="details"></dl></article>
+      <article class="panel quick-panel"><div class="panel-heading"><div><h2 data-i18n="quickActions"></h2><p data-i18n="quickDescription"></p></div></div>
+        <button class="action-card" data-go="accounts"><span class="action-icon">＋</span><span><b data-i18n="manageAccounts"></b><small data-i18n="manageAccountsHint"></small></span><span>↗</span></button>
+        <button class="action-card" id="saveBtn"><span class="action-icon">↓</span><span><b data-i18n="saveAll"></b><small data-i18n="saveAllHint"></small></span><span>↗</span></button>
+        <button class="action-card" data-go="players"><span class="action-icon">◎</span><span><b data-i18n="viewPlayers"></b><small data-i18n="viewPlayersHint"></small></span><span>↗</span></button>
+      </article>
+    </div>
+    <article class="panel"><div class="panel-heading"><div><h2 data-i18n="recentActivity"></h2><p data-i18n="activityHint"></p></div><button class="text-button" data-go="activity" data-i18n="viewAll"></button></div><div id="recentActivity"></div></article>
+  </section>
+  <section id="view-players" class="view" hidden>
+    <article class="panel"><div class="panel-heading"><div><h2 data-i18n="connectedPlayers"></h2><p data-i18n="playersHint"></p></div><span id="playerCount" class="tag">—</span></div>
+    <div class="table-wrap"><table><thead><tr><th data-i18n="player"></th><th data-i18n="level"></th><th data-i18n="state"></th><th data-i18n="location"></th><th data-i18n="roles"></th><th data-i18n="actions"></th></tr></thead><tbody id="playerRows"></tbody></table></div></article>
+  </section>
+  <section id="view-accounts" class="view" hidden>
+    <article class="panel"><div class="panel-heading"><div><h2 data-i18n="accountDirectory"></h2><p data-i18n="accountsHint"></p></div><button id="newAccountBtn" class="primary">＋ <span data-i18n="newAccount"></span></button></div>
+    <div class="toolbar"><div class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" data-placeholder="search" data-aria="search"></div><span id="accountCount" class="muted"></span></div>
+    <div class="table-wrap"><table><thead><tr><th data-i18n="username"></th><th data-i18n="nickname"></th><th>UUID</th><th data-i18n="actions"></th></tr></thead><tbody id="accountRows"></tbody></table></div>
+    <div class="pagination"><span id="pageInfo" class="muted"></span><div><button id="prevPage" data-i18n="previous"></button><button id="nextPage" data-i18n="next"></button></div></div></article>
+  </section>
+  <section id="view-operations" class="view" hidden>
+    <div class="overview-grid"><article class="panel"><div class="panel-heading"><div><h2 data-i18n="dataPersistence"></h2><p data-i18n="saveAllHint"></p></div></div><p class="muted" data-i18n="persistenceHint"></p><button id="operationsSave" class="primary" data-i18n="saveAll"></button></article>
+    <article class="panel"><div class="panel-heading"><div><h2 data-i18n="closeRoom"></h2><p data-i18n="roomHint"></p></div></div>
+    <form id="roomForm"><div class="form-grid"><label><span data-i18n="channelServer"></span><input name="server" type="number" min="1" max="255" value="1" required></label><label><span data-i18n="channel"></span><input name="channel" type="number" min="1" max="255" value="1" required></label><label><span data-i18n="roomId"></span><input name="room" type="number" min="1" max="65535" required></label></div><button class="danger" type="submit" data-i18n="closeRoom"></button></form></article></div>
+  </section>
+  <section id="view-activity" class="view" hidden><article class="panel"><div class="panel-heading"><div><h2 data-i18n="activity"></h2><p data-i18n="activityHint"></p></div><button id="clearActivity" data-i18n="clear"></button></div><div id="activityList"></div></article></section>
+  <footer><span>CSO2 / <span data-i18n="console"></span></span><span id="updatedAt" data-i18n="waiting"></span></footer>
+</main>
+</div>
+<dialog id="loginDialog" class="login-dialog">
+<form id="loginForm"><div class="dialog-heading"><span class="brand-icon">C<span>2</span></span><button type="button" data-close="loginDialog" class="icon-button" data-aria="cancel">×</button></div><p class="eyebrow" data-i18n="authorizedAccess"></p><h2 data-i18n="connectServer"></h2><p class="muted" data-i18n="tokenHint"></p><label><span>ADMIN_TOKEN</span><input id="token" type="password" autocomplete="off" spellcheck="false" minlength="16" maxlength="128" pattern="[A-Za-z0-9_]{16,128}" required placeholder="••••••••••••••••"></label><p id="loginError" class="form-error" role="alert"></p><button type="submit" class="primary full" data-i18n="connect"></button><p class="fine-print" data-i18n="sessionHint"></p></form>
+</dialog>
+<dialog id="accountDialog">
+<form id="accountForm"><div class="dialog-heading"><div><p class="eyebrow" data-i18n="accounts"></p><h2 id="accountDialogTitle"></h2></div><button type="button" data-close="accountDialog" class="icon-button" data-aria="cancel">×</button></div><div id="accountSummary" class="account-summary"></div><div id="accountFields" class="form-grid"></div><p id="accountError" class="form-error" role="alert"></p><p id="editHint" class="fine-print" data-i18n="editHint"></p><div class="dialog-actions"><button type="button" data-close="accountDialog" data-i18n="cancel"></button><button class="primary" type="submit" data-i18n="save"></button></div></form>
+</dialog>
+<dialog id="itemDialog">
+<form id="itemForm"><div class="dialog-heading"><div><p class="eyebrow" data-i18n="inventory"></p><h2 id="itemTitle"></h2></div><button type="button" data-close="itemDialog" class="icon-button" data-aria="cancel">×</button></div><p id="itemAccount" class="muted"></p><div class="form-grid"><label><span data-i18n="itemId"></span><input name="itemId" type="number" min="1" max="4294967295" required></label><label id="quantityField"><span data-i18n="quantity"></span><input name="count" type="number" min="1" max="65535" value="1" required></label></div><p id="itemError" class="form-error" role="alert"></p><div class="dialog-actions"><button type="button" data-close="itemDialog" data-i18n="cancel"></button><button class="primary" type="submit" data-i18n="apply"></button></div></form>
+</dialog>
+<dialog id="confirmDialog" class="confirm-dialog"><form id="confirmForm"><p class="eyebrow" data-i18n="confirmAction"></p><h2 id="confirmTitle"></h2><p id="confirmDescription" class="muted"></p><p id="confirmError" class="form-error" role="alert"></p><div class="dialog-actions"><button type="button" data-close="confirmDialog" data-i18n="cancel"></button><button type="submit" class="danger" data-i18n="confirm"></button></div></form></dialog>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>
+

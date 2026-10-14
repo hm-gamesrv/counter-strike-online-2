@@ -1,31 +1,26 @@
-# 版本控制
+# 版本控制与 CI
 .git
 .gitignore
+.github
 
-# Claude
-.claude
-
-# IDE 配置
-.idea
-*.iml
-misc.xml
-modules.xml
-workspace.xml
-dataSources.xml
-
-# 文档与 CI（镜像不需要）
+# 文档、部署元数据与开发工具（镜像不需要）
 *.md
-photos
-appveyor.yml
-local-console.bat
-
-# 构建相关
+LICENSE
+info.json
 Dockerfile
 .dockerignore
 docker-compose.yml
+.claude
+.agents
+.codex
+.idea
+*.iml
+
+# 上游参考仓库与本地构建产物
+.ref/
+.dist/
 
 # 运行期数据（绝不可进镜像）
-database/json
-database/report
-database/*.db
+/data/
+database/
 *.log

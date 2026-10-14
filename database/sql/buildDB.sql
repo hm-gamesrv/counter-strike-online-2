@@ -1,1 +1,0 @@
-Create Database If Not Exists CSO2Server Character Set UTF8;

@@ -5,8 +5,8 @@ import (
 
 	. "github.com/KouKouChan/CSO2-Server/blademaster/core/message"
 	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
+	. "github.com/KouKouChan/CSO2-Server/logging"
 	. "github.com/KouKouChan/CSO2-Server/servermanager"
-	. "github.com/KouKouChan/CSO2-Server/verbose"
 )
 
 const (
@@ -32,7 +32,7 @@ func OnReportMsg(p *PacketData, client net.Conn) {
 		DebugInfo(2, "Error : Client from", client.RemoteAddr().String(), "try to send reportMsg but not in server !")
 		return
 	}
-	if IsExistsIngameName(pkt.Name) {
+	if NicknameExists(string(pkt.Name)) {
 		switch pkt.Type {
 		case 0:
 			SaveReport(string(pkt.Name), abusive, pkt.Msg)

@@ -44,19 +44,19 @@ func WriteItem(num uint32, curitem *uint8) []byte {
 
 func CreateNewUserInventory() UserInventory {
 	Inv := UserInventory{
-		0,
-		DefaultInventoryItem,
-		map[uint32]bool{},
-		1001,
-		1004,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		CreateDefaultUserBuyMenu(),
-		CreateDefaultLoadout(),
+		NumOfItem:            0,
+		Items:                DefaultInventoryItem,
+		OnlyOnceBundleItemId: map[uint32]bool{},
+		CTModel:              1001,
+		TModel:               1004,
+		HeadItem:             0,
+		GloveItem:            0,
+		BackItem:             0,
+		StepsItem:            0,
+		CardItem:             0,
+		SprayItem:            0,
+		BuyMenu:              CreateDefaultUserBuyMenu(),
+		Loadouts:             CreateDefaultLoadout(),
 	}
 	Inv.NumOfItem = uint16(len(Inv.Items))
 	return Inv

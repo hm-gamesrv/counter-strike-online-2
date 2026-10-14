@@ -8,24 +8,18 @@ import (
 	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
 	. "github.com/KouKouChan/CSO2-Server/kerlong"
 	. "github.com/KouKouChan/CSO2-Server/kerlong/encode"
-	. "github.com/KouKouChan/CSO2-Server/verbose"
+	. "github.com/KouKouChan/CSO2-Server/logging"
 )
 
 var (
 	//MainServer 主服务器
-	MainServer = ServerManager{
-		0,
-		[]*ChannelServer{},
-	}
+	MainServer      = ServerManager{ServerNum: 0, Servers: []*ChannelServer{}}
 	mainServerMutex sync.Mutex
 )
 
-//初始化主服务器，仅运行一次，不考虑互斥问题
+// 初始化主服务器，仅运行一次，不考虑互斥问题
 func NewMainServer() ServerManager {
-	srvmgr := ServerManager{
-		0, //初始化，默认数量为0
-		[]*ChannelServer{},
-	}
+	srvmgr := ServerManager{ServerNum: 0, Servers: []*ChannelServer{}}
 	chlsrv := NewChannelServer([]byte(DefalutServerName))
 	chl1 := NewChannelInfo([]byte(DefalutChannelName1), chlsrv)
 	if !AddChannel(&chlsrv, &chl1) ||
@@ -41,7 +35,7 @@ func NewMainServer() ServerManager {
 	return srvmgr
 }
 
-//主服务器里加频道服务器,一次只能一个协程访问
+// 主服务器里加频道服务器,一次只能一个协程访问
 func AddChannelServer(dest *ServerManager, src *ChannelServer) bool {
 	mainServerMutex.Lock()
 	defer mainServerMutex.Unlock()
@@ -64,20 +58,20 @@ func AddChannelServer(dest *ServerManager, src *ChannelServer) bool {
 	return true
 }
 
-//新建频道服务器
+// 新建频道服务器
 func NewChannelServer(name []byte) ChannelServer {
 	chlsrv := ChannelServer{
-		GetNewChannelServerID(),
-		3,
-		ChannelServerTypeNormal,
-		name,
-		0,
-		[]*ChannelInfo{},
+		ServerIndex:  GetNewChannelServerID(),
+		ServerStatus: 3,
+		ServerType:   ChannelServerTypeNormal,
+		ServerName:   name,
+		ChannelCount: 0,
+		Channels:     []*ChannelInfo{},
 	}
 	return chlsrv
 }
 
-//频道服务器里加频道,一次只能一个协程访问
+// 频道服务器里加频道,一次只能一个协程访问
 func AddChannel(dest *ChannelServer, src *ChannelInfo) bool {
 	mainServerMutex.Lock()
 	defer mainServerMutex.Unlock()
@@ -100,7 +94,7 @@ func AddChannel(dest *ChannelServer, src *ChannelInfo) bool {
 	return true
 }
 
-//新的频道服务器ID,一次只能一个协程访问
+// 新的频道服务器ID,一次只能一个协程访问
 func GetNewChannelServerID() uint8 {
 	mainServerMutex.Lock()
 	defer mainServerMutex.Unlock()
@@ -124,7 +118,7 @@ func GetNewChannelServerID() uint8 {
 	return 0
 }
 
-//通过ID得到对应频道服务器
+// 通过ID得到对应频道服务器
 func GetChannelServerWithID(id uint8) *ChannelServer {
 	if id <= 0 {
 		return nil
@@ -138,7 +132,7 @@ func GetChannelServerWithID(id uint8) *ChannelServer {
 	return nil
 }
 
-//处理请求服务器列表
+// 处理请求服务器列表
 func OnServerList(client net.Conn) {
 	uPtr := GetUserFromConnection(client)
 	if uPtr == nil ||
@@ -159,7 +153,7 @@ func OnServerList(client net.Conn) {
 
 }
 
-//建立某个频道服务器数据包
+// 建立某个频道服务器数据包
 func BuildChannelServerList(chlsrv ChannelServer) []byte {
 	var list []byte
 	l := len(chlsrv.ServerName)

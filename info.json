@@ -9,18 +9,11 @@
     "resources": {
         "ports": [
             {
-                "host": "1314",
-                "container": "1314",
-                "proto": "tcp",
-                "required": true,
-                "desc": "Web 注册页面"
-            },
-            {
                 "host": "1315",
                 "container": "1315",
                 "proto": "tcp",
                 "required": true,
-                "desc": "GM 控制台"
+                "desc": "管理页面"
             },
             {
                 "host": "30001",
@@ -39,10 +32,10 @@
         ],
         "volumes": [
             {
-                "host": "./counter-strike-online-2-database",
-                "container": "/app/CSO2-Server/database",
+                "host": "./counter-strike-online-2-data",
+                "container": "/data",
                 "required": true,
-                "desc": "玩家数据"
+                "desc": "服务器数据"
             }
         ],
         "env": [],

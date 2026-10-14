@@ -4,10 +4,10 @@ import (
 	"sync"
 
 	. "github.com/KouKouChan/CSO2-Server/kerlong"
-	. "github.com/KouKouChan/CSO2-Server/verbose"
+	. "github.com/KouKouChan/CSO2-Server/logging"
 )
 
-//房间信息
+// 房间信息
 type (
 	Room struct {
 		Id uint16
@@ -448,7 +448,7 @@ func (rm Room) GetNumOfReadyPlayers() int {
 		numCts := rm.GetAllCtNum()
 		numTrs := rm.GetAllTrNum()
 		requiredBalanceBots := IntAbs(numCts - numTrs)
-		botPlayers = Ternary(botPlayers > requiredBalanceBots, botPlayers, requiredBalanceBots).(int)
+		botPlayers = max(botPlayers, requiredBalanceBots)
 	}
 	return botPlayers + rm.GetNumOfRealReadyPlayers()
 }

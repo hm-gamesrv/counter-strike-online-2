@@ -7,8 +7,8 @@ import (
 	. "github.com/KouKouChan/CSO2-Server/blademaster/core/inventory"
 	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
 	. "github.com/KouKouChan/CSO2-Server/kerlong"
+	. "github.com/KouKouChan/CSO2-Server/logging"
 	. "github.com/KouKouChan/CSO2-Server/servermanager"
-	. "github.com/KouKouChan/CSO2-Server/verbose"
 )
 
 const (
@@ -52,7 +52,7 @@ func OnSetCampaign(p *PacketData, client net.Conn) {
 					SendPacket(rst, uPtr.CurrentConnection)
 				}
 				uPtr.GetExp(3000)
-				rst = BytesCombine(BuildHeader(uPtr.CurrentSequence, PacketTypeUserInfo), BuildUserInfo(0XFFFFFFFF, NewUserInfo(uPtr), uPtr.Userid, true))
+				rst = BytesCombine(BuildHeader(uPtr.CurrentSequence, PacketTypeUserInfo), BuildUserInfo(0xFFFFFFFF, NewUserInfo(uPtr), uPtr.Userid, true))
 				SendPacket(rst, uPtr.CurrentConnection)
 				//OnSendMessage(uPtr.CurrentSequence, uPtr.CurrentConnection, MessageDialogBox, GAME_USER_NEW_ITEM_RESTART)
 			case Campaign_2:
@@ -63,7 +63,7 @@ func OnSetCampaign(p *PacketData, client net.Conn) {
 					SendPacket(rst, uPtr.CurrentConnection)
 				}
 				uPtr.GetPoints(5000)
-				rst = BytesCombine(BuildHeader(uPtr.CurrentSequence, PacketTypeUserInfo), BuildUserInfo(0XFFFFFFFF, NewUserInfo(uPtr), uPtr.Userid, true))
+				rst = BytesCombine(BuildHeader(uPtr.CurrentSequence, PacketTypeUserInfo), BuildUserInfo(0xFFFFFFFF, NewUserInfo(uPtr), uPtr.Userid, true))
 				SendPacket(rst, uPtr.CurrentConnection)
 				//OnSendMessage(uPtr.CurrentSequence, uPtr.CurrentConnection, MessageDialogBox, GAME_USER_NEW_ITEM_RESTART)
 			case Campaign_3:
@@ -74,7 +74,7 @@ func OnSetCampaign(p *PacketData, client net.Conn) {
 					SendPacket(rst, uPtr.CurrentConnection)
 				}
 				uPtr.GetExp(8000)
-				rst = BytesCombine(BuildHeader(uPtr.CurrentSequence, PacketTypeUserInfo), BuildUserInfo(0XFFFFFFFF, NewUserInfo(uPtr), uPtr.Userid, true))
+				rst = BytesCombine(BuildHeader(uPtr.CurrentSequence, PacketTypeUserInfo), BuildUserInfo(0xFFFFFFFF, NewUserInfo(uPtr), uPtr.Userid, true))
 				SendPacket(rst, uPtr.CurrentConnection)
 				//OnSendMessage(uPtr.CurrentSequence, uPtr.CurrentConnection, MessageDialogBox, GAME_USER_NEW_ITEM_RESTART)
 			case Campaign_4:
@@ -85,7 +85,7 @@ func OnSetCampaign(p *PacketData, client net.Conn) {
 					SendPacket(rst, uPtr.CurrentConnection)
 				}
 				uPtr.GetExp(10000)
-				rst = BytesCombine(BuildHeader(uPtr.CurrentSequence, PacketTypeUserInfo), BuildUserInfo(0XFFFFFFFF, NewUserInfo(uPtr), uPtr.Userid, true))
+				rst = BytesCombine(BuildHeader(uPtr.CurrentSequence, PacketTypeUserInfo), BuildUserInfo(0xFFFFFFFF, NewUserInfo(uPtr), uPtr.Userid, true))
 				SendPacket(rst, uPtr.CurrentConnection)
 				//OnSendMessage(uPtr.CurrentSequence, uPtr.CurrentConnection, MessageDialogBox, GAME_USER_NEW_ITEM_RESTART)
 			case Campaign_5:
