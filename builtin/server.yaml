@@ -18,7 +18,7 @@
 # NOT in this file, because they describe how an instance is deployed rather
 # than how it plays - set them as environment variables:
 #
-#     DATA_DIR       where player data lives       (default: <exe dir>/data)
+#     DATA_DIR       where player data lives       (default: /data)
 #     TCP_PORT       game port                     (default: 30001)
 #     UDP_PORT       UDP hole-punch port           (default: 30002)
 #     ADMIN_PORT     admin web API port            (default: 1315)

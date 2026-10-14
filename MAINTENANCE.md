@@ -20,6 +20,16 @@
 - 管理 API 的 JSON 解码拒绝第二个 JSON 值及尾随垃圾；收回物品接口拒绝 ID 0。
 - 清理 README 的停更告示、数据库与占位功能描述，更新后台说明。
   CI 由 GitHub Actions 承担（构建并推送镜像），不再依赖 AppVeyor。
+- 全树死代码清扫：删除约 150 行注释掉的代码、约 20 个零引用函数/类型
+  （含 137 行的 `GetFlags`）、约 60 个零引用的协议与枚举常量、
+  若干只写不读的结构体字段，以及 `UnlockList` / `item_unlock.csv` 这条
+  从未被消费的数据通路。判据与逐项清单见 [FIXES.md](./FIXES.md) §11.1。
+  删除后由 `go build` 兜底 —— 删到仍在使用的符号会直接报 `undefined`。
+- 全仓库行尾统一为 LF（此前 6 个 locale ini 与 4 个 CSV 是 CRLF），
+  并加 `.gitattributes`（`* text=auto eol=lf`）固定。解析结果经摘要比对未变。
+- 模块路径改为 `cso2-server` —— 裸 `go build` 的产物名取模块路径最后一段，
+  改这里默认产物名才真正变成 `cso2-server`；Dockerfile 同步为
+  `/app/cso2-server`。版本号升至 `v0.9.0`。
 
 ## 模块职责
 
@@ -92,8 +102,8 @@ node --test blademaster/adminapi/tests/console.test.mjs   # 7 个用例
 
 ```bash
 mkdir -p .dist
-go build -trimpath -ldflags="-s -w" -o .dist/CSO2-Server .
-go build -tags timetzdata -ldflags '-s -w' -trimpath -o .dist/app.bin .   # Dockerfile 的构建方式
+go build -trimpath -ldflags="-s -w" -o .dist/cso2-server .
+go build -tags timetzdata -ldflags '-s -w' -trimpath -o .dist/cso2-server .   # Dockerfile 的构建方式
 docker build -t cso2:temp .
 ```
 
@@ -113,7 +123,7 @@ Go 测试覆盖管理认证、账号生命周期、存储与配置，以及内�
 ```bash
 export ADMIN_TOKEN=ChangeMe_0123456789
 export DATA_DIR=./data
-go run .          # 或用 .dist/CSO2-Server
+go run .          # 或用 .dist/cso2-server
 ```
 
 默认访问 `http://localhost:1315/`，点击「连接」填入令牌。

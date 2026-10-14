@@ -49,7 +49,7 @@ Temporary Items
 
 # 本地构建产物
 /.dist/
-/CSO2-Server
-/CSO2-Server.exe
+/cso2-server
+/cso2-server.exe
 /counter-strike-online-2
 /*.exe

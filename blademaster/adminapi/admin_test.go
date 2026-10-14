@@ -9,10 +9,10 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/KouKouChan/CSO2-Server/config"
-	. "github.com/KouKouChan/CSO2-Server/kerlong"
-	. "github.com/KouKouChan/CSO2-Server/logging"
-	. "github.com/KouKouChan/CSO2-Server/servermanager"
+	. "cso2-server/config"
+	. "cso2-server/kerlong"
+	. "cso2-server/logging"
+	. "cso2-server/servermanager"
 )
 
 // testToken is 21 characters of letters, digits and underscores: a valid

@@ -38,7 +38,13 @@
                 "desc": "服务器数据"
             }
         ],
-        "env": [],
+        "env": [
+            {
+                "name": "ADMIN_TOKEN",
+                "value": "",
+                "desc": "管理员面板认证 Token，16-128 位字母/数字/下划线，缺失或格式不合法则不启动管理后台"
+            }
+        ],
         "extraArgs": ""
     },
     "variants": [

@@ -3,9 +3,9 @@ package host
 import (
 	"net"
 
-	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	. "github.com/KouKouChan/CSO2-Server/logging"
-	. "github.com/KouKouChan/CSO2-Server/servermanager"
+	. "cso2-server/blademaster/typestruct"
+	. "cso2-server/logging"
+	. "cso2-server/servermanager"
 )
 
 func OnHostKillPacket(p *PacketData, client net.Conn) {
@@ -19,8 +19,6 @@ func OnHostKillPacket(p *PacketData, client net.Conn) {
 	uPtr := GetUserFromID(pkt.KillerID)
 	if uPtr != nil &&
 		uPtr.Userid > 0 {
-		//log.Println("Error : Client from", client.RemoteAddr().String(), "sent HostKill but not in server or is bot !")
-		//return
 		//修改玩家当前数据
 		uPtr.CountKillNum(pkt.KillNum)
 	}

@@ -11,9 +11,9 @@ import (
 	"strings"
 	"sync"
 
-	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	. "github.com/KouKouChan/CSO2-Server/kerlong"
-	. "github.com/KouKouChan/CSO2-Server/logging"
+	. "cso2-server/blademaster/typestruct"
+	. "cso2-server/kerlong"
+	. "cso2-server/logging"
 )
 
 // Persistent storage: one JSON document per account, named after the account's

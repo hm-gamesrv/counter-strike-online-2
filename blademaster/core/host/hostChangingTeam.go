@@ -3,10 +3,10 @@ package host
 import (
 	"net"
 
-	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	. "github.com/KouKouChan/CSO2-Server/kerlong"
-	. "github.com/KouKouChan/CSO2-Server/logging"
-	. "github.com/KouKouChan/CSO2-Server/servermanager"
+	. "cso2-server/blademaster/typestruct"
+	. "cso2-server/kerlong"
+	. "cso2-server/logging"
+	. "cso2-server/servermanager"
 )
 
 func OnChangingTeam(p *PacketData, client net.Conn) {
@@ -39,24 +39,12 @@ func OnChangingTeam(p *PacketData, client net.Conn) {
 		return
 	}
 	//更新数据
-	//log.Println(p.data)
 	destUser.SetUserTeam(pkt.NewTeam)
 	result := BuildChangingTeam(destUser.Userid, destUser.CurrentTeam)
 
 	for _, v := range rm.Users {
 		rst := BytesCombine(BuildHeader(v.CurrentSequence, p.Id), result)
 		SendPacket(rst, v.CurrentConnection)
-		// if rm.setting.areBotsEnabled != 0 {
-		// 	//(*u).currentTeam = pkt.newTeam
-		// 	//log.Println("User", string(u.username), "changed team", u.currentTeam)
-		// 	//(*rm).users[k].currentTeam = pkt.newTeam
-		// 	//向每名玩家表示该玩家更换了队伍
-		// 	rst1 := BuildChangingTeam(u.userid, pkt.newTeam)
-		// 	for _, i := range rm.users {
-		// 		rst = BytesCombine(BuildHeader(i.currentSequence, p), rst1)
-		// 		sendPacket(rst, i.currentConnection)
-		// 	}
-		// }
 	}
 	DebugInfo(2, "Host changed User", destUser.UserName, "to team", pkt.NewTeam)
 }

@@ -3,8 +3,8 @@ package message
 import (
 	"net"
 
-	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	. "github.com/KouKouChan/CSO2-Server/kerlong"
+	. "cso2-server/blademaster/typestruct"
+	. "cso2-server/kerlong"
 )
 
 func OnSendMessage(seq *uint8, client net.Conn, tp uint8, msg []byte) {

@@ -4,12 +4,12 @@ import (
 	"math/rand/v2"
 	"net"
 
-	. "github.com/KouKouChan/CSO2-Server/blademaster/core/inventory"
-	. "github.com/KouKouChan/CSO2-Server/blademaster/core/message"
-	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	. "github.com/KouKouChan/CSO2-Server/kerlong"
-	. "github.com/KouKouChan/CSO2-Server/logging"
-	. "github.com/KouKouChan/CSO2-Server/servermanager"
+	. "cso2-server/blademaster/core/inventory"
+	. "cso2-server/blademaster/core/message"
+	. "cso2-server/blademaster/typestruct"
+	. "cso2-server/kerlong"
+	. "cso2-server/logging"
+	. "cso2-server/servermanager"
 )
 
 func OnSupplyOpenBox(p *PacketData, client net.Conn) {

@@ -1,12 +1,9 @@
 package typestruct
 
 const (
-	MessageCongratulate    = 11
-	MessageNoticeImportant = 20
-	MessageDialogBox       = 21
-	MessageNotice          = 22
-	MessageNotice2         = 23
-	MessageDialogBoxExit   = 60
+	MessageCongratulate = 11
+	MessageDialogBox    = 21
+	MessageNotice       = 22
 )
 
 var (
@@ -25,13 +22,10 @@ var (
 	GAME_ROOM_JOIN_FAILED_CLOSED                    = []byte("#CSO2_POPUP_ROOM_JOIN_FAILED_CLOSED")
 	GAME_ROOM_JOIN_FAILED_FULL                      = []byte("#CSO2_POPUP_ROOM_JOIN_FAILED_FULL")
 	GAME_ROOM_JOIN_FAILED_BAD_PASSWORD              = []byte("#CSO2_POPUP_ROOM_JOIN_FAILED_INVALID_PASSWD")
-	GAME_ROOM_CHANGETEAM_FAILED                     = []byte("#CSO2_POPUP_ROOM_CHANGETEAM_FAILED")
 	GAME_ROOM_COUNTDOWN_FAILED_NOENEMIES            = []byte("#CSO2_UI_ROOM_COUNTDOWN_FAILED_NOENEMY")
-	GAME_LOGIN_BAD_USERINFO                         = []byte("#CSO2_LoginAuth_Certify_NoPassport")
 	GAME_LOGIN_BAD_PASSWORD                         = []byte("#CSO2_LoginAuth_WrongPassword")
 	GAME_LOGIN_BAD_USERNAME                         = []byte("#CSO2_LoginAuth_UserNotExists")
 	GAME_LOGIN_TENTH_FAILED                         = []byte("#CSO2_LoginAuth_TempBlockedByLoginFail")
-	GAME_LOGIN_INVALID_USERINFO                     = []byte("#CSO2_ServerMessage_INVALID_USERINFO")
 	GAME_REPORT_USER_SUCCEED                        = []byte("#CSO2_POPUP_USER_REPORT_SUCCEED")
 	CSO2_BUY_FAIL_CN_0X11_NO_CASH                   = []byte("#CSO2_BUY_FAIL_CN_0X11_NO_CASH")
 	CSO2_BUY_FAIL_NO_POINT                          = []byte("#CSO2_BUY_FAIL_NO_POINT")
@@ -40,10 +34,7 @@ var (
 	CSO2_BUY_FAIL_CN_0X12_DB_ERROR                  = []byte("#CSO2_BUY_FAIL_CN_0X12_DB_ERROR")
 	CSO2_UI_RAMDOMBOX_ALERT_000                     = []byte("#CSO2_UI_RAMDOMBOX_ALERT_000")
 	CSO2_UI_RANDOMBOX_KEY_ALERT_BUY_01              = []byte("#CSO2_UI_RANDOMBOX_KEY_ALERT_BUY_01")
-	CSO2_POPUP_ROOM_LEAVE_PENALTY                   = []byte("#CSO2_POPUP_ROOM_LEAVE_PENALTY")
 	CSO2_UI_RANK_CONDITION_HIDE                     = []byte("#CSO2_UI_RANK_CONDITION_HIDE")
 	CSO2_BUY_FAIL_BUY_CONDITION_FAILED_BY_FAIL_ITEM = []byte("#CSO2_BUY_FAIL_BUY_CONDITION_FAILED_BY_FAIL_ITEM")
 	CSO2_POPUP_NICKNAME_ALREADY_EXIST               = []byte("#CSO2_POPUP_NICKNAME_ALREADY_EXIST")
-	CSO2_POPUP_NICKNAME_CHANGED_SUCCESS             = []byte("#CSO2_POPUP_NICKNAME_CHANGED_SUCCESS")
-	CSO2_POPUP_MEGAPHONE_USE_FAIL_INVALID_ITEM      = []byte("#CSO2_POPUP_MEGAPHONE_USE_FAIL_INVALID_ITEM")
 )

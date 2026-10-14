@@ -16,7 +16,7 @@ COPY . .
 
 # -tags timetzdata：嵌入时区数据库（alpine 无 /usr/share/zoneinfo）
 # -ldflags '-s -w'：去掉符号表，减小体积
-RUN go build -tags timetzdata -ldflags '-s -w' -trimpath -o /build/app.bin .
+RUN go build -tags timetzdata -ldflags '-s -w' -trimpath -o /build/cso2-server .
 
 # ===================
 # 主镜像
@@ -32,7 +32,7 @@ RUN addgroup -g 1000 gamesrv \
 RUN mkdir -p /app && chown 1000:1000 /app \
     && mkdir -p /data && chown 1000:1000 /data
 
-COPY --from=builder --chown=1000:1000 /build/app.bin /app
+COPY --from=builder --chown=1000:1000 /build/cso2-server /app
 
 EXPOSE 1315/tcp 30001/tcp 30002/udp
 
@@ -40,4 +40,4 @@ VOLUME ["/data"]
 
 WORKDIR /app
 USER 1000:1000
-CMD ["/app/app.bin"]
+CMD ["/app/cso2-server"]

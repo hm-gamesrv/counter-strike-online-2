@@ -4,12 +4,12 @@ import (
 	"math/rand/v2"
 	"net"
 
-	. "github.com/KouKouChan/CSO2-Server/blademaster/core/inventory"
-	. "github.com/KouKouChan/CSO2-Server/blademaster/core/message"
-	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	. "github.com/KouKouChan/CSO2-Server/kerlong"
-	. "github.com/KouKouChan/CSO2-Server/logging"
-	. "github.com/KouKouChan/CSO2-Server/servermanager"
+	. "cso2-server/blademaster/core/inventory"
+	. "cso2-server/blademaster/core/message"
+	. "cso2-server/blademaster/typestruct"
+	. "cso2-server/kerlong"
+	. "cso2-server/logging"
+	. "cso2-server/servermanager"
 )
 
 const (
@@ -89,42 +89,6 @@ func OnItemUse(p *PacketData, client net.Conn) {
 		SendPacket(rst, uPtr.CurrentConnection)
 
 		DebugInfo(2, "User", uPtr.UserName, "got point", point, "by using pointlotto", itemID)
-	/*case 2010: //频道喇叭
-		//查找玩家当前频道
-		chlsrv := GetChannelServerWithID(uPtr.GetUserChannelServerID())
-		if chlsrv == nil || chlsrv.ServerIndex <= 0 {
-			OnSendMessage(uPtr.CurrentSequence, uPtr.CurrentConnection, MessageDialogBox, CSO2_POPUP_MEGAPHONE_USE_FAIL_INVALID_ITEM)
-			DebugInfo(2, "User", uPtr.UserName, "use item", itemID, "failed,not in channel server")
-			return
-		}
-		chl := GetChannelServerWithID(uPtr.GetUserChannelID())
-		if chl == nil || chl.ServerIndex <= 0 {
-			OnSendMessage(uPtr.CurrentSequence, uPtr.CurrentConnection, MessageDialogBox, CSO2_POPUP_MEGAPHONE_USE_FAIL_INVALID_ITEM)
-			DebugInfo(2, "User", uPtr.UserName, "use item", itemID, "failed,not in channel")
-			return
-		}
-
-		idx, ok := uPtr.DecreaseItem(itemID)
-		if !ok {
-			OnSendMessage(uPtr.CurrentSequence, uPtr.CurrentConnection, MessageDialogBox, CSO2_UI_RAMDOMBOX_ALERT_000)
-			DebugInfo(2, "User", uPtr.UserName, "use item", itemID, "failed")
-			return
-		}
-
-		rst := BytesCombine(BuildHeader(uPtr.CurrentSequence, PacketTypeInventory_Create),
-			BuildInventoryInfoSingle(uPtr, 0, idx))
-		SendPacket(rst, uPtr.CurrentConnection)
-
-		//发送消息
-
-		rst = BytesCombine(BuildHeader(uPtr.CurrentSequence, PacketTypeUseItem),
-			buildMegaphone(pkt.String))
-		SendPacket(rst, uPtr.CurrentConnection)
-
-		DebugInfo(2, "User", uPtr.UserName, "say <", string(pkt.String), "> with item", itemID)
-	case 2011: //服务器喇叭
-	case 2012: //全体喇叭
-	*/
 	default:
 		DebugInfo(2, "User", uPtr.UserName, "try using item but itemid is", itemID)
 		return
@@ -166,14 +130,4 @@ func UsePointLotto(itemid uint32) uint64 {
 	default:
 		return 0
 	}
-}
-
-func buildMegaphone(str []byte) []byte {
-	temp := make([]byte, 256)
-	offset := 0
-	WriteUint8(&temp, useitem, &offset)
-	WriteUint8(&temp, 6, &offset)
-	WriteUint8(&temp, 1, &offset)
-	WriteString(&temp, str, &offset)
-	return temp[:offset]
 }

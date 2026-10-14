@@ -3,8 +3,8 @@ package servermanager
 import (
 	"sync"
 
-	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	. "github.com/KouKouChan/CSO2-Server/logging"
+	. "cso2-server/blademaster/typestruct"
+	. "cso2-server/logging"
 )
 
 func NewChannelInfo(name []byte, chlsrv ChannelServer) ChannelInfo {
@@ -20,12 +20,11 @@ func NewChannelInfo(name []byte, chlsrv ChannelServer) ChannelInfo {
 		NextRoomID:    1,
 		RoomNum:       0,
 		Rooms:         map[uint16]*Room{},
-		RoomNums:      map[uint8]uint16{},
 		ChannelMutex:  &mutex,
 	}
 }
 
-// getNewChannelID() 暂定
+// GetNewChannelID 暂定
 func GetNewChannelID(chlsrv ChannelServer) uint8 {
 	if chlsrv.ChannelCount > MAXCHANNELNUM {
 		DebugInfo(2, "Channel is too much ! Unable to create more !")
@@ -98,7 +97,6 @@ func AddChannelRoom(room *Room, chlid uint8, chlsrvid uint8) bool {
 	defer chl.ChannelMutex.Unlock()
 	chl.RoomNum++
 	chl.Rooms[room.Id] = room
-	chl.RoomNums[room.RoomNumber] = room.Id
 	if chl.Rooms[room.Id] == nil {
 		DebugInfo(2, "Warning ! add nil room ")
 	}
@@ -133,7 +131,6 @@ func DelChannelRoom(roomid uint16, chlid uint8, chlsrvid uint8) bool {
 		}
 		chl.RoomNum--
 		DebugInfo(1, "Room", string(chl.Rooms[roomid].Setting.RoomName), "id", roomid, "had been deleted !")
-		delete(chl.RoomNums, chl.Rooms[roomid].RoomNumber)
 		delete(chl.Rooms, roomid)
 		return true
 	}
@@ -160,28 +157,10 @@ func DelChannelRoomQuick(roomid uint16, chl *ChannelInfo) bool {
 		}
 		chl.RoomNum--
 		DebugInfo(1, "Room", string(chl.Rooms[roomid].Setting.RoomName), "id", roomid, "had been deleted !")
-		delete(chl.RoomNums, chl.Rooms[roomid].RoomNumber)
 		delete(chl.Rooms, roomid)
 		return true
 	}
 	return false
-}
-
-// getNewRoomNumber() 获取房间在某个频道下的标号
-func GetNewRoomNumber(chl ChannelInfo) uint8 {
-	if chl.RoomNum > MAXCHANNELROOMNUM {
-		DebugInfo(2, "Error : Room is too much ! Unable to create more !")
-		//ID=0 是非法的
-		return 0
-	}
-	chl.ChannelMutex.Lock()
-	defer chl.ChannelMutex.Unlock()
-	for i := 1; i <= MAXCHANNELROOMNUM; i++ {
-		if _, ok := chl.RoomNums[uint8(i)]; !ok {
-			return uint8(i)
-		}
-	}
-	return 0
 }
 
 func GetRoomFromID(chlsrvID uint8, chlID uint8, roomID uint16) *Room {

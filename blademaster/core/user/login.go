@@ -4,14 +4,14 @@ import (
 	"net"
 	"strings"
 
-	. "github.com/KouKouChan/CSO2-Server/blademaster/core/inventory"
-	. "github.com/KouKouChan/CSO2-Server/blademaster/core/message"
-	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	. "github.com/KouKouChan/CSO2-Server/config"
-	. "github.com/KouKouChan/CSO2-Server/kerlong"
-	. "github.com/KouKouChan/CSO2-Server/kerlong/encode"
-	. "github.com/KouKouChan/CSO2-Server/logging"
-	. "github.com/KouKouChan/CSO2-Server/servermanager"
+	. "cso2-server/blademaster/core/inventory"
+	. "cso2-server/blademaster/core/message"
+	. "cso2-server/blademaster/typestruct"
+	. "cso2-server/config"
+	. "cso2-server/kerlong"
+	. "cso2-server/kerlong/encode"
+	. "cso2-server/logging"
+	. "cso2-server/servermanager"
 )
 
 func OnLogin(seq *uint8, dataPacket *PacketData, client net.Conn) {
@@ -75,24 +75,11 @@ func OnLogin(seq *uint8, dataPacket *PacketData, client net.Conn) {
 	default:
 	}
 
-	//检查升级
-	// if u.CheckUpdate != 1 {
-	// 	DebugInfo(2, "Updating User", nu, "data ...")
-	// 	//当前版本升级
-	// 	for _, v := range DefaultInventoryItem {
-	// 		u.AddItemSingle(v.Id, 0)
-	// 	}
-	// 	u.Updated()
-	// 	DebugInfo(2, "Updating User", nu, "data done !")
-	// }
-
 	//设置数据
 	ClearCount(clientStr)
 	u.CurrentConnection = client
 	u.CurrentSequence = seq
 	u.CheckOutdatedItem()
-	// illegalItems := u.CheckIllegalItem()
-	// DebugInfo(2, "Found", len(illegalItems), "illegal items for user", nu)
 
 	//把用户加入用户管理器
 	if !UsersManager.AddUser(u) {

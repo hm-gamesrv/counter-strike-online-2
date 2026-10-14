@@ -5,10 +5,10 @@ import (
 	"net"
 	"sync"
 
-	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	. "github.com/KouKouChan/CSO2-Server/kerlong"
-	. "github.com/KouKouChan/CSO2-Server/kerlong/encode"
-	. "github.com/KouKouChan/CSO2-Server/logging"
+	. "cso2-server/blademaster/typestruct"
+	. "cso2-server/kerlong"
+	. "cso2-server/kerlong/encode"
+	. "cso2-server/logging"
 )
 
 var (

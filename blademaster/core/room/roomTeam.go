@@ -3,10 +3,10 @@ package room
 import (
 	"net"
 
-	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	. "github.com/KouKouChan/CSO2-Server/kerlong"
-	. "github.com/KouKouChan/CSO2-Server/logging"
-	. "github.com/KouKouChan/CSO2-Server/servermanager"
+	. "cso2-server/blademaster/typestruct"
+	. "cso2-server/kerlong"
+	. "cso2-server/logging"
+	. "cso2-server/servermanager"
 )
 
 func OnChangeTeam(p *PacketData, client net.Conn) {
@@ -43,15 +43,6 @@ func OnChangeTeam(p *PacketData, client net.Conn) {
 		return
 	}
 
-	// //检查是否是房主
-	// if uPtr.Userid != rm.HostUserID &&
-	// 	rm.Setting.AreBotsEnabled != 0 {
-	// 	OnSendMessage(uPtr.CurrentSequence, uPtr.CurrentConnection, DialogBox,
-	// 		GAME_ROOM_CHANGETEAM_FAILED)
-	// 	DebugInfo(2, "Error : User", string(uPtr.Username), "try to change team in bot mode and isn't host !")
-	// 	return
-	// }
-
 	//更换队伍
 	uPtr.SetUserTeam(pkt.NewTeam)
 	//发送数据包
@@ -60,14 +51,6 @@ func OnChangeTeam(p *PacketData, client net.Conn) {
 		//发送玩家更换队伍消息
 		rst := BytesCombine(BuildHeader(v.CurrentSequence, p.Id), setteam)
 		SendPacket(rst, v.CurrentConnection)
-		// if rm.Setting.AreBotsEnabled != 0 {
-		// 	v.SetUserTeam(pkt.NewTeam)
-		// 	setteam := BuildChangTeam(v.Userid, pkt.NewTeam)
-		// 	for _, k := range rm.Users {
-		// 		rst = BytesCombine(BuildHeader(k.currentSequence, p), setteam)
-		// 		sendPacket(rst, k.currentConnection)
-		// 	}
-		// }
 	}
 	DebugInfo(2, "User", uPtr.UserName, "changed team to", uPtr.CurrentTeam, "in room", string(rm.Setting.RoomName), "id", rm.Id)
 }

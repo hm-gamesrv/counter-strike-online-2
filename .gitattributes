@@ -1,0 +1,9 @@
+# 全仓库统一 LF 行尾。
+#
+# 历史遗留：10 个来自客户端解包的数据文件曾是 CRLF —— 6 个 locales/*.ini
+# 与 4 个 scripts/*.csv。两边的解析器都对行尾不敏感（本地化用的 INI 解析器
+# 会 TrimSpace 掉 \r，游戏数据用的 encoding/csv 会把 CRLF 归一化为 LF），
+# 转换前后解析结果逐字节相同。这里把它固定下来，避免再次漂回 CRLF。
+#
+# text=auto 只作用于 git 判定为文本的文件，二进制资产不受影响。
+* text=auto eol=lf

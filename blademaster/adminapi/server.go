@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/KouKouChan/CSO2-Server/config"
-	"github.com/KouKouChan/CSO2-Server/logging"
+	"cso2-server/config"
+	"cso2-server/logging"
 )
 
 // AdminTokenEnv is the environment variable holding the admin bearer token.

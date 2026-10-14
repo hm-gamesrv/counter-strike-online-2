@@ -1,7 +1,7 @@
 package typestruct
 
 import (
-	. "github.com/KouKouChan/CSO2-Server/kerlong"
+	. "cso2-server/kerlong"
 )
 
 const (
@@ -18,10 +18,9 @@ type InUDPmsg struct {
 	IpAddress uint32
 	Port      uint16
 
-	PacketData         []byte
-	Datalen            int
-	CurOffset          int //可能32位
-	ParsedSuccessfully bool
+	PacketData []byte
+	Datalen    int
+	CurOffset  int //可能32位
 }
 
 func (p InUDPmsg) IsHeartbeat() bool {
@@ -32,7 +31,6 @@ func (dest *InUDPmsg) PraseUDPpacket(data []byte, len int) bool {
 	dest.CurOffset = 0
 	dest.Signature = ReadUint8(data, &dest.CurOffset)
 	if dest.Signature != UdpPacketSignature {
-		dest.ParsedSuccessfully = false
 		return false
 	}
 	dest.Datalen = len
@@ -44,6 +42,5 @@ func (dest *InUDPmsg) PraseUDPpacket(data []byte, len int) bool {
 		dest.IpAddress = ReadUint32BE(data, &dest.CurOffset)
 		dest.Port = ReadUint16(data, &dest.CurOffset)
 	}
-	dest.ParsedSuccessfully = true
 	return true
 }

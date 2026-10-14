@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/KouKouChan/CSO2-Server/logging"
+	"cso2-server/logging"
 )
 
 // bearerToken extracts the credential from an "Authorization: Bearer x" header.

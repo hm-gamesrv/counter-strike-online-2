@@ -6,17 +6,14 @@ import (
 	"io"
 	"strconv"
 
-	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	"github.com/KouKouChan/CSO2-Server/builtin"
-	. "github.com/KouKouChan/CSO2-Server/logging"
+	. "cso2-server/blademaster/typestruct"
+	"cso2-server/builtin"
+	. "cso2-server/logging"
 )
 
 const (
 	WeaponListCSV  = "scripts/item_list.csv"
-	ExpLevelCSV    = "scripts/exp_level.csv"
-	UnlockCSV      = "scripts/item_unlock.csv"
 	BoxCSV         = "scripts/supplyList.csv"
-	VipCSV         = "scripts/vip_info.csv"
 	DefaultItemCSV = "scripts/defaultItemList.csv"
 	ShopItemCSV    = "scripts/shop.csv"
 )
@@ -24,7 +21,6 @@ const (
 func InitCSV() {
 	Info("Reading built-in game data ...")
 	readWeaponList()
-	readUnlockList()
 	readBoxList()
 	readDefaultItemList()
 	if Conf.EnableShop {
@@ -57,12 +53,10 @@ func readWeaponList() {
 				continue
 			}
 			itemd := ItemData{
-				ItemID:      uint32(id),
-				Name:        record[1][16:],
-				Class:       record[4],
-				Category:    record[5],
-				BuyCategory: record[6],
-				ItemType:    itemtype,
+				ItemID:   uint32(id),
+				Name:     record[1][16:],
+				Category: record[5],
+				ItemType: itemtype,
 			}
 
 			ItemList[itemd.ItemID] = itemd
@@ -71,97 +65,6 @@ func readWeaponList() {
 		}
 	}
 
-}
-
-func readUnlockList() {
-	//读取武器解锁数据
-	data, err := builtin.ReadFile(UnlockCSV)
-	if err != nil {
-		panic(err)
-	}
-
-	reader := csv.NewReader(bytes.NewReader(data))
-	for {
-		record, err := reader.Read()
-		if err == io.EOF {
-			break
-		} else if err != nil {
-			panic(err)
-		}
-		if err == nil {
-			id, err := strconv.Atoi(record[0])
-			if err != nil {
-				continue
-			}
-			nextid, err := strconv.Atoi(record[1])
-			if err != nil {
-				continue
-			}
-			flag0, err := strconv.Atoi(record[2])
-			if err != nil {
-				continue
-			}
-			count0, err := strconv.Atoi(record[3])
-			if err != nil {
-				continue
-			}
-			flag1, err := strconv.Atoi(record[4])
-			if err != nil {
-				continue
-			}
-			count1, err := strconv.Atoi(record[5])
-			if err != nil {
-				continue
-			}
-			flag2, err := strconv.Atoi(record[6])
-			if err != nil {
-				continue
-			}
-			count2, err := strconv.Atoi(record[7])
-			if err != nil {
-				continue
-			}
-			flag3, err := strconv.Atoi(record[8])
-			if err != nil {
-				continue
-			}
-			count3, err := strconv.Atoi(record[9])
-			if err != nil {
-				continue
-			}
-			flag4, err := strconv.Atoi(record[10])
-			if err != nil {
-				continue
-			}
-			count4, err := strconv.Atoi(record[11])
-			if err != nil {
-				continue
-			}
-			cat, err := strconv.Atoi(record[12])
-			if err != nil {
-				continue
-			}
-			itemd := UnlockData{
-				ItemID:         uint32(id),
-				NextItemID:     uint32(nextid),
-				ConditionFlag0: uint32(flag0),
-				Count0:         uint32(count0),
-				ConditionFlag1: uint32(flag1),
-				Count1:         uint32(count1),
-				ConditionFlag2: uint32(flag2),
-				Count2:         uint32(count2),
-				ConditionFlag3: uint32(flag3),
-				Count3:         uint32(count3),
-				ConditionFlag4: uint32(flag4),
-				Count4:         uint32(count4),
-				Category:       uint32(cat),
-			}
-
-			UnlockList[itemd.NextItemID] = itemd
-		} else {
-			continue
-		}
-	}
 }
 
 func readBoxList() {
@@ -190,7 +93,6 @@ func readBoxList() {
 			if err != nil {
 				continue
 			}
-			itemname := record[3]
 			value, err := strconv.Atoi(record[4])
 			if err != nil {
 				continue
@@ -208,7 +110,7 @@ func readBoxList() {
 				Warn("Illegal value", value, "for item", itemid, "in box", boxid)
 				continue
 			}
-			item := BoxItem{ItemID: uint32(itemid), ItemName: itemname, Value: value, Day: uint16(day)}
+			item := BoxItem{ItemID: uint32(itemid), Value: value, Day: uint16(day)}
 
 			if v, ok := BoxList[uint32(boxid)]; ok {
 				//如果该box数据已经存在

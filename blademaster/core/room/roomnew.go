@@ -4,10 +4,10 @@ import (
 	"net"
 	"sync"
 
-	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	. "github.com/KouKouChan/CSO2-Server/kerlong"
-	. "github.com/KouKouChan/CSO2-Server/logging"
-	. "github.com/KouKouChan/CSO2-Server/servermanager"
+	. "cso2-server/blademaster/typestruct"
+	. "cso2-server/kerlong"
+	. "cso2-server/logging"
+	. "cso2-server/servermanager"
 )
 
 func OnNewRoom(p *PacketData, client net.Conn) {
@@ -43,12 +43,6 @@ func OnNewRoom(p *PacketData, client net.Conn) {
 		DebugInfo(2, "Error :", uPtr.UserName, "cannot join a new room !")
 		return
 	}
-
-	// u := rm.RoomGetUser(uPtr.Userid)
-	// if u == nil {
-	// 	DebugInfo(2, "Error : Cannot add host ", string(uPtr.Username), "to new room !")
-	// 	return
-	// }
 
 	uPtr.JoinRoom(rm.Id, UserForceCounterTerrorist)
 
@@ -106,9 +100,6 @@ func BuildCreateAndJoin(rm *Room) []byte {
 	WriteUint8(&buf, 0, &offset)
 	WriteUint8(&buf, 0x5A, &offset)
 	WriteUint8(&buf, 0, &offset)
-	// for i:=0 ;i< 0 ;i++ {
-	// 	WriteUint8(&buf,rm.unk27[i],&offset)
-	// }
 	WriteUint8(&buf, 1, &offset)
 	WriteUint8(&buf, 0, &offset)
 	WriteUint8(&buf, 0, &offset)
@@ -117,11 +108,6 @@ func BuildCreateAndJoin(rm *Room) []byte {
 	WriteUint8(&buf, 0, &offset)
 	// if == 1, it can have 3 more bytes
 	WriteUint8(&buf, 0, &offset)
-	// if (this.botEnabled) { == 0
-	// 	WriteUint8(&buf,this.botDifficulty,&offset)
-	// 	WriteUint8(&buf,this.numCtBots,&offset)
-	// 	WriteUint8(&buf,this.numTrBots,&offset)
-	// }
 	WriteUint8(&buf, 0, &offset)
 	WriteUint8(&buf, 0, &offset)
 	WriteUint8(&buf, 0, &offset)

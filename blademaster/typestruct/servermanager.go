@@ -31,7 +31,6 @@ type (
 		NextRoomID    uint8
 		RoomNum       uint16
 		Rooms         map[uint16]*Room
-		RoomNums      map[uint8]uint16
 
 		ChannelMutex *sync.Mutex
 	}
@@ -46,18 +45,10 @@ const (
 	DefalutChannelName1 = "CSO2-Channel[1/2]"
 	DefalutChannelName2 = "CSO2-Channel[2/2]"
 
-	//貌似非3以外的都被客户端认为是战队频道
 	ChannelServerTypeNormal = 1
-	ChannelServerTypeTeam   = 3
 
 	//ChannelType
-	ChannelTypeFree         = 0
-	ChannelTypeNovice       = 1
-	ChannelTypeNoviceLowKAD = 2
-	ChannelTypeClan         = 3
-	ChannelTypeBigCity      = 4
-	ChannelTypeActive       = 5 //only open for active
+	ChannelTypeFree = 0
 
-	ChannelStatusBusy   = 0
 	ChannelStatusNormal = 1
 )

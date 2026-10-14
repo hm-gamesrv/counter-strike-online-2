@@ -3,8 +3,8 @@ package playerinfo
 import (
 	"net"
 
-	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	. "github.com/KouKouChan/CSO2-Server/logging"
+	. "cso2-server/blademaster/typestruct"
+	. "cso2-server/logging"
 )
 
 const (

@@ -3,8 +3,7 @@ package typestruct
 import (
 	"sync"
 
-	. "github.com/KouKouChan/CSO2-Server/kerlong"
-	. "github.com/KouKouChan/CSO2-Server/logging"
+	. "cso2-server/logging"
 )
 
 // UManager 全局用户管理
@@ -51,26 +50,6 @@ func (dest *UManager) AddUser(src *User) bool {
 	}
 	dest.UserNum++
 	dest.Users[src.Userid] = src
-	return true
-}
-
-func (dest *UManager) DelUser(src *User) bool {
-	if dest == nil || src == nil {
-		return false
-	}
-	if src.Userid <= 0 {
-		DebugInfo(2, "Usermanager Error : ID of User", (*src).UserName, "is illegal !")
-		return false
-	}
-
-	dest.Lock.Lock()
-	defer dest.Lock.Unlock()
-
-	if _, ok := dest.Users[src.Userid]; !ok {
-		return false
-	}
-	delete(dest.Users, src.Userid)
-	dest.UserNum--
 	return true
 }
 
@@ -122,38 +101,4 @@ func (dest *UManager) OnlineCount() int {
 	dest.Lock.RLock()
 	defer dest.Lock.RUnlock()
 	return len(dest.Users)
-}
-
-func (dest *UManager) GetChannelUsers(chlsrvid, chlid uint8) []byte {
-	if dest == nil {
-		return []byte{0, 0}
-	}
-
-	buf := make([]byte, 2)
-	offset, num := 0, 0
-
-	dest.Lock.RLock()
-	defer dest.Lock.RUnlock()
-
-	if len(dest.Users) == 0 {
-		DebugInfo(2, "Usermanager Error : There is no online user !")
-		return []byte{0, 0}
-	}
-
-	for _, u := range dest.Users {
-		if u.GetUserChannelServerID() == chlsrvid &&
-			u.GetUserChannelID() == chlid {
-			num++
-
-			tmpbuf := make([]byte, 128)
-			WriteUint32(&tmpbuf, u.Userid, &offset)
-			WriteString(&tmpbuf, []byte(u.IngameName), &offset)
-
-			buf = BytesCombine(buf, tmpbuf[:offset], BuildUserInfo(0xFFFFFFFF, NewUserInfo(u), 0, false))
-
-			offset = 0
-		}
-	}
-	WriteUint16(&buf, uint16(num), &offset)
-	return buf[:offset]
 }

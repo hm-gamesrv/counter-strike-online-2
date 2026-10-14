@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	"github.com/KouKouChan/CSO2-Server/builtin"
-	. "github.com/KouKouChan/CSO2-Server/logging"
+	. "cso2-server/blademaster/typestruct"
+	"cso2-server/builtin"
+	. "cso2-server/logging"
 )
 
 // The whole point of the built-in resources: the server must be able to start
@@ -21,11 +21,8 @@ func TestEmbeddedResourcesArePresent(t *testing.T) {
 		"locales/global.ini",
 		"locales/motd.txt",
 		"scripts/item_list.csv",
-		"scripts/item_unlock.csv",
 		"scripts/supplyList.csv",
 		"scripts/defaultItemList.csv",
-		"scripts/exp_level.csv",
-		"scripts/vip_info.csv",
 		"scripts/shop.csv",
 	} {
 		if !builtin.Exists(path) {
@@ -220,7 +217,6 @@ func TestInitCSVReadsEmbeddedGameData(t *testing.T) {
 
 	// Reset the package-level tables so the assertions below mean something.
 	ItemList = map[uint32]ItemData{}
-	UnlockList = map[uint32]UnlockData{}
 	BoxList = map[uint32]BoxData{}
 	BoxIDs = nil
 	DefaultInventoryItem = nil
@@ -232,9 +228,6 @@ func TestInitCSVReadsEmbeddedGameData(t *testing.T) {
 	if len(ItemList) == 0 {
 		t.Error("the weapon list did not load")
 	}
-	if len(UnlockList) == 0 {
-		t.Error("the unlock list did not load")
-	}
 	if len(BoxList) == 0 || len(BoxIDs) == 0 {
 		t.Error("the supply box list did not load")
 	}
@@ -245,8 +238,8 @@ func TestInitCSVReadsEmbeddedGameData(t *testing.T) {
 		t.Error("the shop list did not load")
 	}
 
-	t.Logf("items=%d unlocks=%d boxes=%d defaultItems=%d shopEntries=%d",
-		len(ItemList), len(UnlockList), len(BoxList), len(DefaultInventoryItem), len(ShopItemList))
+	t.Logf("items=%d boxes=%d defaultItems=%d shopEntries=%d",
+		len(ItemList), len(BoxList), len(DefaultInventoryItem), len(ShopItemList))
 }
 
 // The locale files are still read through the builtin override mechanism, so an
@@ -309,7 +302,7 @@ func readEnvWith(t *testing.T, vars map[string]string) Environment {
 	}
 
 	var env Environment
-	env.ReadEnv("/exe")
+	env.ReadEnv()
 	return env
 }
 

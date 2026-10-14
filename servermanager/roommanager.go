@@ -3,8 +3,8 @@ package servermanager
 import (
 	"sync"
 
-	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	. "github.com/KouKouChan/CSO2-Server/logging"
+	. "cso2-server/blademaster/typestruct"
+	. "cso2-server/logging"
 )
 
 type RM struct {

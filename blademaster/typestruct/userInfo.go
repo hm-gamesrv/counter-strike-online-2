@@ -1,8 +1,8 @@
 package typestruct
 
 import (
-	. "github.com/KouKouChan/CSO2-Server/kerlong"
-	. "github.com/KouKouChan/CSO2-Server/kerlong/encode"
+	. "cso2-server/kerlong"
+	. "cso2-server/kerlong/encode"
 )
 
 // 发送出去的包结构，其中一些未知，知道后会加入user里去

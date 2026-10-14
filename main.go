@@ -10,34 +10,34 @@ import (
 	"syscall"
 	"time"
 
-	. "github.com/KouKouChan/CSO2-Server/blademaster/Exp"
-	. "github.com/KouKouChan/CSO2-Server/blademaster/adminapi"
-	. "github.com/KouKouChan/CSO2-Server/blademaster/core/achievement"
-	. "github.com/KouKouChan/CSO2-Server/blademaster/core/automatch"
-	. "github.com/KouKouChan/CSO2-Server/blademaster/core/chat"
-	. "github.com/KouKouChan/CSO2-Server/blademaster/core/disassemble"
-	. "github.com/KouKouChan/CSO2-Server/blademaster/core/holepunch"
-	. "github.com/KouKouChan/CSO2-Server/blademaster/core/host"
-	. "github.com/KouKouChan/CSO2-Server/blademaster/core/inventory"
-	. "github.com/KouKouChan/CSO2-Server/blademaster/core/message"
-	. "github.com/KouKouChan/CSO2-Server/blademaster/core/notify"
-	. "github.com/KouKouChan/CSO2-Server/blademaster/core/option"
-	. "github.com/KouKouChan/CSO2-Server/blademaster/core/playerinfo"
-	. "github.com/KouKouChan/CSO2-Server/blademaster/core/quick"
-	. "github.com/KouKouChan/CSO2-Server/blademaster/core/report"
-	. "github.com/KouKouChan/CSO2-Server/blademaster/core/room"
-	. "github.com/KouKouChan/CSO2-Server/blademaster/core/shop"
-	. "github.com/KouKouChan/CSO2-Server/blademaster/core/supply"
-	. "github.com/KouKouChan/CSO2-Server/blademaster/core/useitem"
-	. "github.com/KouKouChan/CSO2-Server/blademaster/core/user"
-	. "github.com/KouKouChan/CSO2-Server/blademaster/core/version"
-	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	"github.com/KouKouChan/CSO2-Server/builtin"
-	. "github.com/KouKouChan/CSO2-Server/config"
-	. "github.com/KouKouChan/CSO2-Server/kerlong"
-	. "github.com/KouKouChan/CSO2-Server/kerlong/encode"
-	. "github.com/KouKouChan/CSO2-Server/logging"
-	. "github.com/KouKouChan/CSO2-Server/servermanager"
+	. "cso2-server/blademaster/Exp"
+	. "cso2-server/blademaster/adminapi"
+	. "cso2-server/blademaster/core/achievement"
+	. "cso2-server/blademaster/core/automatch"
+	. "cso2-server/blademaster/core/chat"
+	. "cso2-server/blademaster/core/disassemble"
+	. "cso2-server/blademaster/core/holepunch"
+	. "cso2-server/blademaster/core/host"
+	. "cso2-server/blademaster/core/inventory"
+	. "cso2-server/blademaster/core/message"
+	. "cso2-server/blademaster/core/notify"
+	. "cso2-server/blademaster/core/option"
+	. "cso2-server/blademaster/core/playerinfo"
+	. "cso2-server/blademaster/core/quick"
+	. "cso2-server/blademaster/core/report"
+	. "cso2-server/blademaster/core/room"
+	. "cso2-server/blademaster/core/shop"
+	. "cso2-server/blademaster/core/supply"
+	. "cso2-server/blademaster/core/useitem"
+	. "cso2-server/blademaster/core/user"
+	. "cso2-server/blademaster/core/version"
+	. "cso2-server/blademaster/typestruct"
+	"cso2-server/builtin"
+	. "cso2-server/config"
+	. "cso2-server/kerlong"
+	. "cso2-server/kerlong/encode"
+	. "cso2-server/logging"
+	. "cso2-server/servermanager"
 )
 
 var (
@@ -119,7 +119,7 @@ func main() {
 	// A relative DATA_DIR is resolved against the working directory, which is
 	// the usual meaning for an environment variable; the resolved path is
 	// logged below either way.
-	Env.ReadEnv(path)
+	Env.ReadEnv()
 
 	if err = InitDataDir(Env.DataDir); err != nil {
 		panic(err)

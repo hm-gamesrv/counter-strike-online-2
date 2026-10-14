@@ -1,7 +1,7 @@
 package kerlong
 
 import (
-	"github.com/KouKouChan/CSO2-Server/logging"
+	"cso2-server/logging"
 )
 
 // CheckErr 有错误就显示

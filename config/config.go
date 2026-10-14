@@ -13,10 +13,10 @@ import (
 
 	"go.yaml.in/yaml/v3"
 
-	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	"github.com/KouKouChan/CSO2-Server/builtin"
-	. "github.com/KouKouChan/CSO2-Server/kerlong"
-	. "github.com/KouKouChan/CSO2-Server/logging"
+	. "cso2-server/blademaster/typestruct"
+	"cso2-server/builtin"
+	. "cso2-server/kerlong"
+	. "cso2-server/logging"
 )
 
 // ConfigFileName is the name looked up inside DATA_DIR, and the name of the
@@ -24,7 +24,7 @@ import (
 const ConfigFileName = "server.yaml"
 
 // ServerVersion is reported by the startup banner and the admin status endpoint.
-const ServerVersion = "v0.8.0"
+const ServerVersion = "v0.9.0"
 
 // CSO2Conf is what the configuration file controls.
 //
@@ -288,8 +288,9 @@ func (env *Environment) LocaleFileName() string {
 
 // ReadEnv loads every environment variable the server understands.
 //
-// exeDir is used to resolve the default DATA_DIR.
-func (env *Environment) ReadEnv(exeDir string) {
+// A relative DATA_DIR is left as-is: it is resolved against the working
+// directory later, by InitDataDir.
+func (env *Environment) ReadEnv() {
 	if env == nil {
 		return
 	}

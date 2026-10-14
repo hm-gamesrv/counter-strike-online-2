@@ -1,16 +1,14 @@
 package inventory
 
 import (
-	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	. "github.com/KouKouChan/CSO2-Server/config"
-	. "github.com/KouKouChan/CSO2-Server/kerlong"
+	. "cso2-server/blademaster/typestruct"
+	. "cso2-server/config"
+	. "cso2-server/kerlong"
 )
 
 var (
 	FullInventoryItem  []UserInventoryItem
 	FullInventoryReply []byte
-
-	numPerDay = float64(24*3600) / 256
 )
 
 func BuildInventoryInfo(u *User) []byte {
@@ -93,23 +91,6 @@ func BuildFullInventoryInfo() []byte {
 	return buf[:offset]
 }
 
-func BuildDefaultInventoryInfo() []byte {
-	buf := make([]byte, 5+len(DefaultInventoryItem)*19)
-	offset := 0
-	WriteUint16(&buf, 25, &offset)
-	for k, v := range DefaultInventoryItem {
-		WriteUint16(&buf, uint16(k), &offset)
-		WriteUint8(&buf, 1, &offset)
-		WriteUint32(&buf, v.Id, &offset)
-		WriteUint16(&buf, v.Count, &offset)
-		WriteUint8(&buf, 1, &offset)
-		WriteUint8(&buf, 0, &offset)
-		WriteUint64(&buf, v.Time, &offset)
-
-	}
-	return buf[:offset]
-}
-
 func BuildUnlockReply(u *User) []byte {
 	if u == nil {
 		return []byte{}
@@ -141,45 +122,8 @@ func BuildUnlockReply(u *User) []byte {
 	return buf[:offset]
 }
 
-// func BuildWeaponKillNum(u *User) []byte {
-// 	if u == nil {
-// 		return []byte{}
-// 	}
-// 	buf := make([]byte, 4096)
-// 	offset := 0
-// 	count := 0
-// 	WriteUint16(&buf, uint16(count), &offset)
-// 	for _, v := range UnlockFullList {
-// 		if _, ok := u.WeaponKills[v.Itemid]; ok && u.WeaponKills[v.Itemid] > 0 {
-// 			count++
-// 			WriteUint32(&buf, 2, &offset) //前置
-// 			WriteUint32(&buf, 1, &offset) //当前
-// 			WriteUint32(&buf, 2, &offset) //杀敌数
-// 			WriteUint16(&buf, 1, &offset)
-// 			WriteUint16(&buf, 1, &offset)
-// 			WriteUint16(&buf, 1, &offset)
-// 		}
-// 	}
-// 	return buf[:offset]
-
-// }
-
-func CreateFullUserInventory() UserInventory {
-	Inv := UserInventory{NumOfItem: 0, Items:
-	//createDeafaultInventoryItem(),
-	CreateFullInventoryItem(), OnlyOnceBundleItemId: map[uint32]bool{}, CTModel: 1047, TModel: 1048, HeadItem: 0, GloveItem: 0, BackItem: 0, StepsItem: 0, CardItem: 0, SprayItem: 42001, BuyMenu: CreateFullUserBuyMenu(), Loadouts: CreateFullLoadout(),
-	}
-	Inv.NumOfItem = uint16(len(Inv.Items))
-	return Inv
-}
-
 func CreateFullInventoryItem() []UserInventoryItem {
 	items := []UserInventoryItem{}
-	// for _, v := range ItemList {
-	// 	if v.Category == "weapon" || v.Category == "class" {
-	// 		items = append(items, UserInventoryItem{v.ItemID, 1})
-	// 	}
-	// }
 	var i uint32
 	//用户角色
 	for i = 1001; i <= 1058; i++ {

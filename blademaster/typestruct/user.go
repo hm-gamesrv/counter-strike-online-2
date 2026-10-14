@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	. "github.com/KouKouChan/CSO2-Server/blademaster/Exp"
+	. "cso2-server/blademaster/Exp"
 )
 
 type (
@@ -167,14 +167,6 @@ func (u *User) SetID(id uint32) {
 	u.Userid = id
 }
 
-func (u *User) SetNewMutex() {
-	if u == nil {
-		return
-	}
-	var mutex sync.Mutex
-	u.UserMutex = &mutex
-}
-
 func (u *User) SetUserName(loginName, username string) {
 	if u == nil {
 		return
@@ -201,15 +193,6 @@ func (u *User) SetUserChannel(id uint8) {
 	u.UserMutex.Lock()
 	defer u.UserMutex.Unlock()
 	u.CurrentChannelIndex = id
-}
-
-func (u *User) SetUserRoom(id uint16) {
-	if u == nil {
-		return
-	}
-	u.UserMutex.Lock()
-	defer u.UserMutex.Unlock()
-	u.CurrentRoomId = id
 }
 
 func (u *User) QuitChannel() {
@@ -554,18 +537,6 @@ func GetNewUser() User {
 	}
 }
 
-func (u *User) PunishPoints() {
-	if u == nil {
-		return
-	}
-	u.UserMutex.Lock()
-	defer u.UserMutex.Unlock()
-	u.Points = u.Points - 1000
-	if u.Points < 0 {
-		u.Points = 0
-	}
-}
-
 func (u *User) GetPoints(num uint64) {
 	if u == nil {
 		return
@@ -785,46 +756,11 @@ func (u *User) SetBoughtItem(id uint32) {
 	u.Inventory.OnlyOnceBundleItemId[id] = true
 }
 
-func (u *User) AddItemSingle(itemid uint32, times uint64) {
-	if u == nil || itemid == 0 {
-		return
-	}
-
-	if times != 0 {
-		d, _ := time.ParseDuration(fmt.Sprintf("%dh", times*24))
-		dd := time.Now().Add(d).Sub(ti)
-		times = uint64(dd.Minutes() * perDay)
-	}
-
-	u.UserMutex.Lock()
-	defer u.UserMutex.Unlock()
-	//检查是否已经拥有
-	for _, v := range u.Inventory.Items {
-		if v.Id == itemid {
-			return
-		}
-	}
-	//添加
-	u.Inventory.Items = append(u.Inventory.Items, UserInventoryItem{Id: itemid, Count: 1, Type: 1, Time: times})
-	if u.Inventory.NumOfItem < math.MaxUint16 {
-		u.Inventory.NumOfItem++
-	}
-}
-
 func IsItemRepetable(itemid uint32) bool {
 	if ItemList[itemid].ItemType == 1 {
 		return true
 	}
 	return false
-}
-
-func (u *User) Updated() {
-	if u == nil {
-		return
-	}
-	u.UserMutex.Lock()
-	defer u.UserMutex.Unlock()
-	u.CheckUpdate = 1
 }
 
 func (u *User) DecreaseItem(itemid uint32) (int, bool) {
@@ -962,23 +898,6 @@ func (u *User) CheckOutdatedItemIngame() []int {
 			u.Inventory.Items[k].Count = 0
 			u.Inventory.Items[k].Time = 0
 			rst = append(rst, k)
-		}
-	}
-	return rst
-}
-
-func (u *User) CheckIllegalItem() []int {
-	var rst []int
-	if u == nil {
-		return rst
-	}
-	u.UserMutex.Lock()
-	defer u.UserMutex.Unlock()
-	for k := 0; k < len(u.Inventory.Items); k++ {
-		if _, ok := ItemList[u.Inventory.Items[k].Id]; !ok {
-			rst = append(rst, k)
-			u.Inventory.Items = append(u.Inventory.Items[:k], u.Inventory.Items[k+1:]...)
-			k--
 		}
 	}
 	return rst

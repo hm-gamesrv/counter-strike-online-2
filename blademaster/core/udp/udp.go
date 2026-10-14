@@ -1,8 +1,8 @@
 package udp
 
 import (
-	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	. "github.com/KouKouChan/CSO2-Server/kerlong"
+	. "cso2-server/blademaster/typestruct"
+	. "cso2-server/kerlong"
 )
 
 func BuildUDPHolepunch(index uint16) []byte {

@@ -3,7 +3,7 @@ package typestruct
 import (
 	"testing"
 
-	. "github.com/KouKouChan/CSO2-Server/blademaster/Exp"
+	. "cso2-server/blademaster/Exp"
 )
 
 // TestGetNewUserDefaults pins down the defaults produced by GetNewUser.

@@ -1,28 +1,10 @@
 package typestruct
 
 type ItemData struct {
-	ItemID      uint32
-	Name        string
-	Class       string
-	Category    string
-	BuyCategory string
-	ItemType    int
-}
-
-type UnlockData struct {
-	ItemID         uint32
-	NextItemID     uint32
-	ConditionFlag0 uint32
-	Count0         uint32
-	ConditionFlag1 uint32
-	Count1         uint32
-	ConditionFlag2 uint32
-	Count2         uint32
-	ConditionFlag3 uint32
-	Count3         uint32
-	ConditionFlag4 uint32
-	Count4         uint32
-	Category       uint32
+	ItemID   uint32
+	Name     string
+	Category string
+	ItemType int
 }
 
 type BoxData struct {
@@ -35,10 +17,9 @@ type BoxData struct {
 }
 
 type BoxItem struct {
-	ItemID   uint32
-	ItemName string
-	Value    int
-	Day      uint16
+	ItemID uint32
+	Value  int
+	Day    uint16
 }
 
 type ShopItem struct {
@@ -55,7 +36,6 @@ type ItemOption struct {
 
 var (
 	ItemList     = make(map[uint32]ItemData)
-	UnlockList   = make(map[uint32]UnlockData)
 	BoxList      = make(map[uint32]BoxData)
 	BoxIDs       = []uint32{}
 	ShopItemList = []ShopItem{}

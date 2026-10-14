@@ -3,8 +3,8 @@ package host
 import (
 	"net"
 
-	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	. "github.com/KouKouChan/CSO2-Server/logging"
+	. "cso2-server/blademaster/typestruct"
+	. "cso2-server/logging"
 )
 
 const (
@@ -14,7 +14,6 @@ const (
 	UserAssist   = 9
 	GameScore    = 10 //比分类
 	TeamChanging = 11
-	HostUnk00    = 12 //未知
 	BuyItem      = 14
 	UserRevived  = 20
 	OnGameEnd    = 21
@@ -23,12 +22,6 @@ const (
 	ItemUsing    = 105
 	SetLoadout   = 107
 	SetBuyMenu   = 111
-
-	//kill类型
-	KillSelf   = 0xFF //自杀
-	KillOne    = 1
-	KillTeamCt = 2
-	KillTeamTr = 1
 )
 
 func OnHost(p *PacketData, client net.Conn) {
@@ -63,8 +56,6 @@ func OnHost(p *PacketData, client net.Conn) {
 			OnHostRevivedPacket(p, client)
 		case GameScore:
 			OnHostGameScorePacket(p, client)
-		//case HostUnk00:
-		//fmt.Println("TeamWinPacket", p.data[:p.datalen], "from", client.RemoteAddr().String())
 		default:
 			DebugInfo(2, "Unknown host packet", pkt.InHostType, "from", client.RemoteAddr().String(), p.Data)
 		}

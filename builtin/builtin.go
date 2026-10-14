@@ -15,14 +15,17 @@
 //
 // takes precedence over the embedded copy. For example, dropping a
 //
-//	builtin/server.conf
+//	builtin/locales/ja-jp.ini
 //
-// next to the executable changes the ports, and
+// next to the executable adds a language, and
 //
 //	builtin/locales/zh-cn.ini
 //
 // replaces just that one locale. Files that are not overridden keep coming from
 // the binary.
+//
+// Configuration is deliberately not covered by this rule: it is read from
+// $DATA_DIR/server.yaml instead, so that it travels with the player data.
 package builtin
 
 import (
@@ -32,10 +35,10 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/KouKouChan/CSO2-Server/logging"
+	"cso2-server/logging"
 )
 
-// FS is the embedded resource tree: server.conf, locales/ and scripts/.
+// FS is the embedded resource tree: server.yaml, locales/ and scripts/.
 //
 //go:embed server.yaml locales scripts
 var FS embed.FS
@@ -81,7 +84,7 @@ func root() string {
 }
 
 // ReadFile returns a built-in resource by its slash-separated relative path,
-// such as "server.conf", "locales/zh-cn.ini" or "scripts/item_list.csv".
+// such as "server.yaml", "locales/zh-cn.ini" or "scripts/item_list.csv".
 //
 // An on-disk override wins over the embedded copy.
 func ReadFile(relPath string) ([]byte, error) {

@@ -3,14 +3,11 @@ package achievement
 import (
 	"net"
 
-	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	. "github.com/KouKouChan/CSO2-Server/logging"
+	. "cso2-server/blademaster/typestruct"
+	. "cso2-server/logging"
 )
 
-const (
-	campaign = 3
-	boss     = 4
-)
+const campaign = 3
 
 func OnAchievement(p *PacketData, client net.Conn) {
 	var pkt InAchievementPacket

@@ -3,8 +3,8 @@ package typestruct
 import (
 	"sync"
 
-	. "github.com/KouKouChan/CSO2-Server/kerlong"
-	. "github.com/KouKouChan/CSO2-Server/logging"
+	. "cso2-server/kerlong"
+	. "cso2-server/logging"
 )
 
 // 房间信息
@@ -66,13 +66,11 @@ const (
 	HostJoin          = 1
 	HostStop          = 3
 	LeaveResultWindow = 4
-	GameContinue      = 5
 
 	//频道以及房间
 	SendFullRoomList = 0
 	JoinLobby        = 0
 	SetLobby         = 1
-	UpdateUserInfo   = 2
 
 	//房间操作
 	NewRoomRequest            = 0
@@ -82,89 +80,67 @@ const (
 	GameStartRequest          = 5
 	UpdateSettings            = 6
 	OnCloseResultWindow       = 7
-	JoinRoomFiled             = 8
 	SetUserTeamRequest        = 9
 	GameStartCountdownRequest = 19
 	Feedback                  = 30
 
 	//游戏模式
-	ModeOriginal            = 1
-	ModeTeamdeath           = 2
-	ModeZombie              = 3
-	ModeStealth             = 4
-	ModeGunteamdeath        = 5
-	ModeTutorial            = 6
-	ModeHide                = 7
-	ModePig                 = 8
-	ModeAnimationtest_vcd   = 9
-	ModeGz_survivor         = 10
-	ModeDevtest             = 11
-	ModeOriginalmr          = 12
-	ModeOriginalmrdraw      = 13
-	ModeCasualbomb          = 14
-	ModeDeathmatch          = 15
-	ModeScenario_test       = 16
-	ModeGz                  = 17
-	ModeGz_intro            = 18
-	ModeGz_tour             = 19
-	ModeGz_pve              = 20
-	ModeEventmod01          = 21
-	ModeDuel                = 22
-	ModeGz_ZB               = 23
-	ModeHeroes              = 24
-	ModeEventmod02          = 25
-	ModeZombiecraft         = 26
-	ModeCampaign1           = 27
-	ModeCampaign2           = 28
-	ModeCampaign3           = 29
-	ModeCampaign4           = 30
-	ModeCampaign5           = 31
-	ModeCampaign6           = 32
-	ModeCampaign7           = 33
-	ModeCampaign8           = 34
-	ModeCampaign9           = 35
-	ModeZ_scenario          = 36
-	ModeZombie_prop         = 37
-	ModeGhost               = 38
-	ModeTag                 = 39
-	ModeHide_match          = 40
-	ModeHide_ice            = 41
-	ModeDiy                 = 42
-	ModeHide_Item           = 43
-	ModeZd_boss1            = 44
-	ModeZd_boss2            = 45
-	ModeZd_boss3            = 46
-	ModePractice            = 47
-	ModeZombie_commander    = 48
-	ModeCasualoriginal      = 49
-	ModeHide2               = 50
-	ModeGunball             = 51
-	ModeZombie_zeta         = 53
-	ModeTdm_small           = 54
-	ModeDe_small            = 55
-	ModeGunteamdeath_re     = 56
-	ModeEndless_wave        = 57
-	ModeRankmatch_original  = 58
-	ModeRankmatch_teamdeath = 59
-	ModePlay_ground         = 60
-	ModeMadcity             = 61
-	ModeHide_origin         = 62
-	ModeTeamdeath_mutation  = 63
-	ModeGiant               = 64
-	ModeZ_scenario_side     = 65
-	ModeHide_multi          = 66
-	ModeMadcity_team        = 67
-	ModeRankmatch_stealth   = 68
+	ModeOriginal           = 1
+	ModeTeamdeath          = 2
+	ModeZombie             = 3
+	ModeStealth            = 4
+	ModeGunteamdeath       = 5
+	ModeHide               = 7
+	ModePig                = 8
+	ModeOriginalmr         = 12
+	ModeCasualbomb         = 14
+	ModeDeathmatch         = 15
+	ModeEventmod01         = 21
+	ModeHeroes             = 24
+	ModeEventmod02         = 25
+	ModeZombiecraft        = 26
+	ModeCampaign1          = 27
+	ModeCampaign2          = 28
+	ModeCampaign3          = 29
+	ModeCampaign4          = 30
+	ModeCampaign5          = 31
+	ModeCampaign6          = 32
+	ModeCampaign7          = 33
+	ModeCampaign8          = 34
+	ModeCampaign9          = 35
+	ModeZ_scenario         = 36
+	ModeZombie_prop        = 37
+	ModeGhost              = 38
+	ModeTag                = 39
+	ModeHide_match         = 40
+	ModeHide_ice           = 41
+	ModeDiy                = 42
+	ModeHide_Item          = 43
+	ModeZd_boss1           = 44
+	ModeZd_boss2           = 45
+	ModeZd_boss3           = 46
+	ModeZombie_commander   = 48
+	ModeCasualoriginal     = 49
+	ModeHide2              = 50
+	ModeGunball            = 51
+	ModeZombie_zeta        = 53
+	ModeTdm_small          = 54
+	ModeDe_small           = 55
+	ModeGunteamdeath_re    = 56
+	ModeMadcity            = 61
+	ModeHide_origin        = 62
+	ModeTeamdeath_mutation = 63
+	ModeGiant              = 64
+	ModeZ_scenario_side    = 65
+	ModeHide_multi         = 66
+	ModeMadcity_team       = 67
 
 	//房间status
 	StatusWaiting = 1
 	StatusIngame  = 2
 
 	//队伍平衡
-	Disabled   = 0
-	Enabled    = 1
-	WithBots   = 2
-	ByKadRatio = 4
+	WithBots = 2
 
 	//房间包表示
 	OUTCreateAndJoin  = 0
@@ -226,7 +202,6 @@ func (rm *Room) SetStatus(status uint8) {
 }
 
 func (rm Room) CanStartGame() bool {
-	//log.Println("mode", rm.Setting.GameModeID)
 	switch rm.Setting.GameModeID {
 	case ModeDeathmatch, ModeOriginal, ModeOriginalmr, ModeCasualbomb,
 		ModeCasualoriginal, ModeEventmod01, ModeEventmod02, ModeDiy,
@@ -239,17 +214,6 @@ func (rm Room) CanStartGame() bool {
 		if rm.GetNumOfReadyPlayers() < 2 {
 			return false
 		}
-		// case ModeGiant, ModeHide, ModeHide2, ModeHide_match, ModeHide_origin,
-		// 	ModeHide_Item, ModeHide_multi, ModeGhost, ModeTag, ModeZombie, ModeZombiecraft,
-		// 	ModeZombie_commander, ModeZombie_prop, ModeZombie_zeta, ModeGunball:
-		// 	if rm.GetNumOfRealReadyPlayers() < 2 {
-		// 		return false
-		// 	}
-		//default:
-		//	return true
-		// if rm.GetNumOfRealReadyPlayers() < 2 {
-		// 	//return false
-		// }
 	}
 	return true
 }
@@ -364,9 +328,7 @@ func (rm Room) FindDesirableTeam() int {
 		} else if v.GetUserTeam() == UserForceCounterTerrorist {
 			ctNum++
 		} else {
-			//rm.RoomMutex.Unlock()
 			DebugInfo(2, "Error : User", v.UserName, "is in Unknown team in room", string(rm.Setting.RoomName))
-			//return 0
 		}
 	}
 	rm.RoomMutex.Unlock()
@@ -390,7 +352,6 @@ func (rm Room) FindDesirableTeam() int {
 			}
 		} else {
 			DebugInfo(2, "Error : Host", u.UserName, "is in Unknown team in room", string(rm.Setting.RoomName))
-			//return 0
 		}
 	}
 	if trNum < ctNum {

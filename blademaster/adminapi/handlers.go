@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"time"
 
-	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	. "github.com/KouKouChan/CSO2-Server/config"
-	. "github.com/KouKouChan/CSO2-Server/servermanager"
+	. "cso2-server/blademaster/typestruct"
+	. "cso2-server/config"
+	. "cso2-server/servermanager"
 )
 
 type statusResponse struct {

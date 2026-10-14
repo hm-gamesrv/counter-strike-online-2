@@ -1,7 +1,7 @@
 package typestruct
 
 import (
-	. "github.com/KouKouChan/CSO2-Server/kerlong"
+	. "cso2-server/kerlong"
 )
 
 type (

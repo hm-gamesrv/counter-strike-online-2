@@ -3,10 +3,10 @@ package achievement
 import (
 	"net"
 
-	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	. "github.com/KouKouChan/CSO2-Server/kerlong"
-	. "github.com/KouKouChan/CSO2-Server/logging"
-	. "github.com/KouKouChan/CSO2-Server/servermanager"
+	. "cso2-server/blademaster/typestruct"
+	. "cso2-server/kerlong"
+	. "cso2-server/logging"
+	. "cso2-server/servermanager"
 )
 
 var (
@@ -164,23 +164,6 @@ func BuildAchievementCampaign(flags uint32, src *OutAchievementCampaign, id uint
 }
 
 func InitCampaignReward() {
-	// for _, v := range UnlockList {
-	// 	if v.ItemID <= 0 {
-	// 		continue
-	// 	}
-	// 	switch v.Category {
-	// 	case 1:
-	// 		RewardCapmgaign1 = append(RewardCapmgaign1, OutAchievementCampaignItems{v.NextItemID, 0, 0})
-	// 	case 2:
-	// 		RewardCapmgaign2 = append(RewardCapmgaign2, OutAchievementCampaignItems{v.NextItemID, 0, 0})
-	// 	case 4:
-	// 		RewardCapmgaign3 = append(RewardCapmgaign3, OutAchievementCampaignItems{v.NextItemID, 0, 0})
-	// 	case 5:
-	// 		RewardCapmgaign4 = append(RewardCapmgaign4, OutAchievementCampaignItems{v.NextItemID, 0, 0})
-	// 	default:
-	// 		DebugInfo(2, "Error : Unkown unlock item category", v.Category)
-	// 	}
-	// }
 	for _, v := range BoxIDs {
 		RewardCapmgaign5 = append(RewardCapmgaign5, OutAchievementCampaignItems{ItemId: v, Ammount: 1, TimeLimited: 0})
 	}

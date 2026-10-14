@@ -125,16 +125,6 @@ func (this *IniParser) IniGetString(section string, key string) string {
 	return v
 }
 
-// IniGetInt32 returns the key's value as an int32, or 0 when absent/invalid.
-func (this *IniParser) IniGetInt32(section string, key string) int32 {
-	v, _ := this.rawValue(section, key)
-	n, err := strconv.ParseInt(strings.TrimSpace(v), 0, 32)
-	if err != nil {
-		return 0
-	}
-	return int32(n)
-}
-
 // IniGetUint32 returns the key's value as a uint32, or 0 when absent/invalid.
 func (this *IniParser) IniGetUint32(section string, key string) uint32 {
 	v, _ := this.rawValue(section, key)
@@ -143,44 +133,4 @@ func (this *IniParser) IniGetUint32(section string, key string) uint32 {
 		return 0
 	}
 	return uint32(n)
-}
-
-// IniGetInt64 returns the key's value as an int64, or 0 when absent/invalid.
-func (this *IniParser) IniGetInt64(section string, key string) int64 {
-	v, _ := this.rawValue(section, key)
-	n, err := strconv.ParseInt(strings.TrimSpace(v), 0, 64)
-	if err != nil {
-		return 0
-	}
-	return n
-}
-
-// IniGetUint64 returns the key's value as a uint64, or 0 when absent/invalid.
-func (this *IniParser) IniGetUint64(section string, key string) uint64 {
-	v, _ := this.rawValue(section, key)
-	n, err := strconv.ParseUint(strings.TrimSpace(v), 0, 64)
-	if err != nil {
-		return 0
-	}
-	return n
-}
-
-// IniGetFloat32 returns the key's value as a float32, or 0 when absent/invalid.
-func (this *IniParser) IniGetFloat32(section string, key string) float32 {
-	v, _ := this.rawValue(section, key)
-	f, err := strconv.ParseFloat(strings.TrimSpace(v), 32)
-	if err != nil {
-		return 0
-	}
-	return float32(f)
-}
-
-// IniGetFloat64 returns the key's value as a float64, or 0 when absent/invalid.
-func (this *IniParser) IniGetFloat64(section string, key string) float64 {
-	v, _ := this.rawValue(section, key)
-	f, err := strconv.ParseFloat(strings.TrimSpace(v), 64)
-	if err != nil {
-		return 0
-	}
-	return f
 }

@@ -3,9 +3,9 @@ package inventory
 import (
 	"net"
 
-	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	. "github.com/KouKouChan/CSO2-Server/kerlong"
-	. "github.com/KouKouChan/CSO2-Server/logging"
+	. "cso2-server/blademaster/typestruct"
+	. "cso2-server/kerlong"
+	. "cso2-server/logging"
 )
 
 const (
@@ -13,10 +13,6 @@ const (
 	FavoriteSetCosmetics = 1
 
 	OptionSetBuyMenu = 1
-)
-
-var (
-	DeafaultInventoryInfo = BuildDefaultInventoryInfo()
 )
 
 func OnFavorite(p *PacketData, client net.Conn) {
@@ -27,10 +23,8 @@ func OnFavorite(p *PacketData, client net.Conn) {
 	}
 	switch pkt.PacketType {
 	case FavoriteSetLoadout:
-		//log.Println("Recived a favorite SetLoadout packet from", client.RemoteAddr().String())
 		OnFavoriteSetLoadout(p, client)
 	case FavoriteSetCosmetics:
-		//log.Println("Recived a favorite SetCosmetics packet from", client.RemoteAddr().String())
 		OnFavoriteSetCosmetics(p, client)
 	default:
 		DebugInfo(2, "Unknown favorite packet", pkt.PacketType, "from", client.RemoteAddr().String())

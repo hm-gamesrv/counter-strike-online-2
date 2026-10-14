@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	. "github.com/KouKouChan/CSO2-Server/servermanager"
+	. "cso2-server/servermanager"
 )
 
 func SaveReport(name, reporttype string, msg []byte) {

@@ -3,10 +3,10 @@ package room
 import (
 	"net"
 
-	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	. "github.com/KouKouChan/CSO2-Server/kerlong"
-	. "github.com/KouKouChan/CSO2-Server/logging"
-	. "github.com/KouKouChan/CSO2-Server/servermanager"
+	. "cso2-server/blademaster/typestruct"
+	. "cso2-server/kerlong"
+	. "cso2-server/logging"
+	. "cso2-server/servermanager"
 )
 
 // onUpdateRoom 房主更新房间信息
@@ -54,7 +54,6 @@ func OnUpdateRoom(p *PacketData, client net.Conn) {
 	for _, v := range curroom.Users {
 		rst := BytesCombine(BuildHeader(v.CurrentSequence, PacketTypeRoom), settingpkt)
 		SendPacket(rst, v.CurrentConnection)
-		//log.Println("["+strconv.Itoa(k+1)+"/"+strconv.Itoa(int((*curroom).numPlayers))+"] Updated room for", v.currentConnection.RemoteAddr().String(), "!")
 	}
 	DebugInfo(2, "Host", uPtr.UserName, "updated room", string(curroom.Setting.RoomName), "id", curroom.Id)
 }

@@ -6,7 +6,7 @@ import (
 	"net"
 	"unsafe"
 
-	. "github.com/KouKouChan/CSO2-Server/kerlong"
+	. "cso2-server/kerlong"
 )
 
 type (
@@ -139,10 +139,6 @@ type (
 	}
 
 	InAchievementPacket struct {
-		Type uint8
-	}
-
-	InEventPacket struct {
 		Type uint8
 	}
 
@@ -438,10 +434,8 @@ type (
 const (
 	//packet's first main type
 	PacketTypeVersion          = 0
-	PacketTypeReply            = 1
 	PacketTypeLogin            = 3
 	PacketTypeServerList       = 5
-	PacketTypeCharacter        = 6
 	PacketTypeRequestRoomList  = 7
 	PacketTypeRequestChannels  = 10
 	PacketTypeRoom             = 65
@@ -450,24 +444,19 @@ const (
 	PacketTypePlayerInfo       = 69
 	PacketTypeUdp              = 70
 	PacketTypeShop             = 72
-	PacketTypeBan              = 74
 	PacketTypeOption           = 76
 	PacketTypeFavorite         = 77
 	PacketTypeUseItem          = 78
 	PacketTypeQuickJoin        = 80
 	PacketTypeReport           = 83
 	PacketTypeSignature        = 85
-	PacketTypeQuickStart       = 86
 	PacketTypeAutomatch        = 88
-	PacketTypeFriend           = 89
 	PacketTypeUnlock           = 90
 	PacketTypeNotify           = 91
 	PacketTypeEvent            = 92
-	PacketTypeGZ               = 95
 	PacketTypeAchievement      = 96
 	PacketTypeSupply           = 102
 	PacketTypeDisassemble      = 104
-	PacketTypeConfigInfo       = 106
 	PacketTypeLobby            = 107
 	PacketTypeUserStart        = 150
 	PacketTypeRoomList         = 151
@@ -484,11 +473,6 @@ const (
 )
 
 func (p *PacketHeader) PraseHeadPacket() {
-	// if p.Data[0] != PacketTypeSignature {
-	// 	p.IsGoodPacket = false
-	// 	return
-	// }
-	// p.IsGoodPacket = true
 	offset := 0
 	p.Sequence = ReadUint8(p.Data, &offset)
 	p.Length = ReadUint16(p.Data, &offset)
@@ -1217,16 +1201,6 @@ func (p *PacketData) PraseInChatPacket(dest *InChatPacket) bool {
 }
 
 func (p *PacketData) PraseInAchievementPacket(dest *InAchievementPacket) bool {
-	//id + type = 2 bytes
-	if dest == nil ||
-		p.Length < 2 {
-		return false
-	}
-	dest.Type = ReadUint8(p.Data, &p.CurOffset)
-	return true
-}
-
-func (p *PacketData) PraseInEventPacket(dest *InEventPacket) bool {
 	//id + type = 2 bytes
 	if dest == nil ||
 		p.Length < 2 {

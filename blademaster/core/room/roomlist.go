@@ -4,10 +4,10 @@ import (
 	"log"
 	"net"
 
-	. "github.com/KouKouChan/CSO2-Server/blademaster/typestruct"
-	. "github.com/KouKouChan/CSO2-Server/kerlong"
-	. "github.com/KouKouChan/CSO2-Server/logging"
-	. "github.com/KouKouChan/CSO2-Server/servermanager"
+	. "cso2-server/blademaster/typestruct"
+	. "cso2-server/kerlong"
+	. "cso2-server/logging"
+	. "cso2-server/servermanager"
 )
 
 func OnRoomList(p *PacketData, client net.Conn) {
@@ -105,15 +105,6 @@ func BuildLobbyReply(seq *uint8, p PacketData, chlsrvid, chlid uint8) []byte {
 	return rst
 }
 
-func BuildCurrentLobby(seq *uint8, chlsrvid, chlid uint8) []byte {
-	rst := BuildHeader(seq, PacketTypeLobby)
-	buf := make([]byte, 1)
-	offset := 0
-	WriteUint8(&buf, 0, &offset)
-	rst = BytesCombine(rst, buf[:offset], UsersManager.GetChannelUsers(chlsrvid, chlid))
-	return rst
-}
-
 // 暂定
 func BuildRoomList(seq *uint8, chl *ChannelInfo) []byte {
 	rst := BuildHeader(seq, PacketTypeRoomList)
@@ -173,12 +164,6 @@ func BuildRoomList(seq *uint8, chl *ChannelInfo) []byte {
 		WriteUint8(&roombuf, v.Setting.WinLimit, &offset)
 		WriteUint16(&roombuf, v.Setting.KillLimit, &offset)
 		WriteUint8(&roombuf, v.Setting.ForceCamera, &offset)
-		// WriteUint8(&roombuf, v.botEnabled, &offset)
-		// if v.botEnabled == 1 {
-		// 	WriteUint8(&roombuf, v.botDifficulty, &offset)
-		// 	WriteUint8(&roombuf, v.numCtBots, &offset)
-		// 	WriteUint8(&roombuf, v.numTrBots, &offset)
-		// }
 		WriteUint8(&roombuf, v.Unk31, &offset)
 		WriteUint8(&roombuf, v.Unk35, &offset)
 		WriteUint8(&roombuf, v.Setting.NextMapEnabled, &offset)

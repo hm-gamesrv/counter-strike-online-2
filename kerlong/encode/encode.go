@@ -79,13 +79,3 @@ func LocalToUtf8(str string) (string, error) {
 	}
 	return localEncoding.NewDecoder().String(str)
 }
-
-// GbkToUtf8 converts GBK-encoded bytes to UTF-8.
-func GbkToUtf8(str []byte) ([]byte, error) {
-	return simplifiedchinese.GBK.NewDecoder().Bytes(str)
-}
-
-// Utf8ToGbk converts UTF-8 bytes to GBK.
-func Utf8ToGbk(str []byte) ([]byte, error) {
-	return simplifiedchinese.GBK.NewEncoder().Bytes(str)
-}

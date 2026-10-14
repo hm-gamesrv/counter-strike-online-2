@@ -26,14 +26,14 @@ git ls-files -z '*.go' | xargs -0 gofmt -l   # 应当无输出
 ### 构建到 `.dist`
 
 ```shell
-mkdir -p .dist && go build -trimpath -ldflags="-s -w" -o .dist/CSO2-Server .
+mkdir -p .dist && go build -trimpath -ldflags="-s -w" -o .dist/cso2-server .
 ```
 
 Windows PowerShell：
 
 ```powershell
 New-Item -ItemType Directory -Force .dist | Out-Null
-go build -trimpath -ldflags="-s -w" -o .dist/CSO2-Server.exe .
+go build -trimpath -ldflags="-s -w" -o .dist/cso2-server.exe .
 ```
 
 **就这些。** 资源已经编进二进制，`.dist` 里只有那一个文件（约 11 MB），
@@ -113,8 +113,8 @@ builtin/
 │   ├── global.ini  zh-cn.ini  zh-tw.ini  en-us.ini  ko-kr.ini  tr-tur.ini
 │   └── motd.txt
 └── scripts/                从客户端解包出来的游戏数据
-    ├── item_list.csv  item_unlock.csv  supplyList.csv  shop.csv
-    └── exp_level.csv  vip_info.csv  defaultItemList.csv
+    ├── item_list.csv  supplyList.csv  shop.csv
+    └── defaultItemList.csv
 ```
 
 原来的目录名是 `assert/`（"assert" 是断言，和资源毫无关系，纯属命名错误）
@@ -148,7 +148,7 @@ builtin.Exists("scripts/item_list.csv")    // 判断是否存在
 如果覆盖文件存在但读不出来（权限问题），会打 `warn` 而不是静默忽略 ——
 否则"我明明改了却没生效"会非常难查。
 
-Docker 下对应 `/app/builtin/`（镜像里可执行文件是 `/app/app.bin`）：
+Docker 下对应 `/app/builtin/`（镜像里可执行文件是 `/app/cso2-server`）：
 
 ```shell
 docker run ... -v /host/zh-cn.ini:/app/builtin/locales/zh-cn.ini:ro
@@ -201,7 +201,7 @@ docker run ... -v /host/zh-cn.ini:/app/builtin/locales/zh-cn.ini:ro
 所有持久化数据都在 `DATA_DIR` 下：
 
 ```shell
-DATA_DIR=/srv/cso2/data ./CSO2-Server
+DATA_DIR=/srv/cso2/data ./cso2-server
 ```
 
 未设置时默认为 **`/data`**（容器里的挂载点）。相对路径按当前工作目录解析
@@ -322,7 +322,7 @@ PBKDF2 格式。
 原来 424 处 `DebugInfo(...)` 调用一行未改。
 
 整个记录先渲染进缓冲区再**一次 Write 写出**，所以多 goroutine 并发时不会串行。
-需要保留日志就重定向 stdout：`./CSO2-Server >> server.jsonl 2>&1`。
+需要保留日志就重定向 stdout：`./cso2-server >> server.jsonl 2>&1`。
 
 日志不再有落盘选项（原 `LogFile` 键已删除）。
 管理页面的输出走 HTTP 响应，不走 stdout；服务器进程的 stdout 现在**只有** JSON
@@ -501,8 +501,14 @@ Go 的并发 map 写入是 `recover()` 抓不到的 `fatal error`，会直接结
 
 UUID 生成也用标准库 `crypto/rand` 手写（`kerlong/uuid.go`），没有引入新依赖。
 
-整棵源码树已规范为 **LF 行尾**并通过 `gofmt`，
-`git ls-files -z '*.go' | xargs -0 gofmt -l` 无输出。
+整棵源码树（**含**被跟踪的数据文件，不只是 `.go`）已规范为 **LF 行尾**，
+并由仓库根目录的 `.gitattributes`（`* text=auto eol=lf`）固定住 ——
+此前 10 个来自客户端解包的文件是 CRLF：6 个 `locales/*.ini` 与
+4 个 `scripts/*.csv`。两个解析器都对行尾不敏感（本地化的 INI 解析器会
+`TrimSpace` 掉 `\r`，游戏数据的 `encoding/csv` 会把 CRLF 归一化为 LF），
+转换前后的解析结果经摘要比对逐字节相同。
+
+`gofmt` 方面：`git ls-files -z '*.go' | xargs -0 gofmt -l` 无输出。
 不要直接 `gofmt -l .` —— `.ref/` 里的上游副本会被一起列出来。
 
 ---
@@ -585,11 +591,11 @@ UUID 生成也用标准库 `crypto/rand` 手写（`kerlong/uuid.go`），没有�
 
 测试覆盖：
 
-- `config/config_test.go` —— **12 个内置资源全部存在且非空**（并断言已退休的
+- `config/config_test.go` —— **9 个内置资源全部存在且非空**（并断言已退休的
   `server.conf` 确实不在二进制里）、内置 `server.yaml` 的默认值、
   **`$DATA_DIR/server.yaml` 覆盖生效**、**部分覆盖保留其余内置默认值**、
   **拼错的键会终止启动**、内置本地化加载、**全部 6 个内置 locale 逐个解析**、
-  内置 MOTD、**内置 CSV 装载出 1132 件武器 / 84 条解锁 / 10 个箱子 /
+  内置 MOTD、**内置 CSV 装载出 1132 件武器 / 10 个箱子 /
   107 件默认物品 / 103 条商店记录**、locale 磁盘覆盖优先于内置且不影响其他文件；
   环境变量部分：默认值、全部覆盖、**非法端口回退默认**、
   **非法布尔回退默认**（含 5 种真值 / 5 种假值写法）、
@@ -622,7 +628,7 @@ UUID 生成也用标准库 `crypto/rand` 手写（`kerlong/uuid.go`），没有�
 端到端冒烟：**把 exe 单独放进一个空目录**（旁边什么都没有），跑四种场景
 
 ```text
-目录内容：CSO2-Server.exe          （8.1 MB，-s -w 之后）
+目录内容：cso2-server.exe          （8.1 MB，-s -w 之后）
 
 A) 全部默认
    Environment: tcp=30001 udp=30002 admin=1315 enableAdmin=true locale=zh-cn codePage=gbk
@@ -656,7 +662,7 @@ data/server.yaml）。
   GET    /api/accounts            → count=1 -> alice/AliceInGame
   PATCH  /api/accounts/alice      → nickname=Renamed level=42 points=777 gm=true
                                     未提交的 mail 保持 a@b.c；磁盘同步
-  GET    /api/status              → version=v0.8.0 accounts=1
+  GET    /api/status              → version=v0.9.0 accounts=1
   DELETE /api/accounts/alice      → deleted；users/ 下 0 个文件
   GET    /api/accounts/alice      → 404
 
@@ -670,7 +676,7 @@ A) 不设 ADMIN_TOKEN     →「ADMIN_TOKEN is not set」，1315 不监听；300
 B) ADMIN_TOKEN 只有 5 位 →「must be between 16 and 128 characters」，1315 不监听
 C) 合法 token           → GET / 返回 14 KB HTML（公开）
                           /api/status 无 token → 401，错误 token → 401
-                          正确 token → version=v0.8.0 adminPort=1315 dataDir=…
+                          正确 token → version=v0.9.0 adminPort=1315 dataDir=…
                           对离线账号发 2 个物品：itemCount 107 → 108 且已写入磁盘
                           设 VIP、立即存档均成功
                           向 1315 发旧的 0x66 控制台帧 → HTTP/1.1 400 Bad Request
@@ -689,27 +695,135 @@ C) 合法 token           → GET / 返回 14 KB HTML（公开）
    但同时跑两个进程指向同一个 `DATA_DIR` 时各自的内存索引不会同步。
 4. **`blademaster/typestruct` 上帝包 + 全局点导入（`import . "..."`）** ——
    1346 行的 `packet.go` 与遍布全项目的点导入让符号来源不可追踪。
-5. **死代码** —— `blademaster/core/version/version.go` 里 120
-   余行被注释掉的旧登录逻辑， 同一段又被复制进 `login.go`。
-6. **房间 ID 全局分配**（`RoomsManager`），无法按频道独立编号。
+5. **房间 ID 全局分配**（`RoomsManager`），无法按频道独立编号。
    房间查找本身走频道内的表，所以不存在数据损坏，只是可扩展性限制。
-7. **管理接口是明文 HTTP，也没有失败锁定** —— token 本身强度足够（16–128
+6. **管理接口是明文 HTTP，也没有失败锁定** —— token 本身强度足够（16–128
    位随机串）， 传输层靠内网。如果要跨公网用，请放在反向代理后面加 TLS；
    也可以顺手加一层 失败次数限制。默认仍监听 `0.0.0.0:1315`，建议防火墙限源。
-8. **没有密码强度策略** —— 管理 API 只要求密码非空，不检查长度或复杂度。
+7. **没有密码强度策略** —— 管理 API 只要求密码非空，不检查长度或复杂度。
    账号是管理员手工创建的，强度由管理员把关；如果需要可以加最小长度与
    弱口令校验。
-9. **账号创建后没有「首次登录改密」流程** —— 管理员把账号名和密码线下交给玩家，
+8. **账号创建后没有「首次登录改密」流程** —— 管理员把账号名和密码线下交给玩家，
    玩家无法自行修改密码（没有自助入口）。若需要，可以加一个「玩家自助改密」
    的接口或用改名卡那样的一次性道具。
-10. **两处注释与代码不一致**（不影响行为，改注释即可）：
-    - `builtin/builtin.go` 的包注释与 `FS` 变量注释仍写 `server.conf`，
-      实际内嵌的是 `server.yaml`。
-    - `config.ReadEnv(exeDir)` 的 `exeDir` 参数未被使用，注释与内置
-      `builtin/server.yaml` 里 "default: `<exe dir>/data`" 的说法都还停留在
-      旧的默认值上；代码里 `DATA_DIR` 默认是 `/data`。
-11. **两个内嵌 CSV 没有读取方**：`scripts/exp_level.csv` 与
-    `scripts/vip_info.csv` 被打包并有常量声明，但没有任何代码读取它们
-    （`LevelExp` 硬编码在 `blademaster/Exp/exp.go`）。保留是为了将来接回。
-12. **本地化 ini 里残留 `[Register]` 段** —— 注册页删除后已无人引用，
-    `[System]` 才是实际生效的部分。属于历史遗留，删掉不影响功能。
+
+### 11.1 已处理的遗留项
+
+#### 第一轮：本节原先列出的四条
+
+- **死代码**：`blademaster/core/version/version.go` 里 122 行被注释掉的旧登录
+  逻辑。同一段逻辑在 `login.go` 里是活的（`OnLogin` 逐行对应），
+  所以这些注释既不会被执行、也不承载任何独有信息。已删除，文件从 144 行
+  缩到 21 行。
+- **注释与代码不一致**：
+  - `builtin/builtin.go` 的包注释与 `FS` 变量注释仍写 `server.conf`，
+    实际内嵌的是 `server.yaml`；示例覆盖文件也已从 `builtin/server.conf`
+    换成真正走得通的那条规则（覆盖配置请用 `$DATA_DIR/server.yaml`）。
+  - `config.ReadEnv` 的 `exeDir` 参数从未被使用，注释却声称它用来解析默认
+    `DATA_DIR`；内置 `builtin/server.yaml` 里也写着默认值是
+    `<exe dir>/data`。该参数已删除（`main.go`、`config_test.go` 同步），
+    注释改为说明相对路径由 `InitDataDir` 按工作目录解析，
+    YAML 里的默认值改写为实际的 `/data`。
+- **两个没有读取方的内嵌 CSV**：`scripts/exp_level.csv` 与
+  `scripts/vip_info.csv` 被打包并有常量声明，但没有任何代码读取它们
+  （`LevelExp` 硬编码在 `blademaster/Exp/exp.go`）。
+  核对 `.ref/` 后确认这**不是**重写时弄丢的读取方 —— Go 上游
+  `configure/csv.go` 同样只声明常量、`InitCSV` 从不读它们，TypeScript 版
+  则完全没有这两个表（经验与 VIP 数据来自数据库）。两个参考实现都没有过
+  这个功能，所以「接回」等于新写功能，且 CSV 的 Exp 列与硬编码曲线并不一致
+  （Lv2→3 为 3256 vs 4093），贸然接回会改变升级曲线。
+  文件、常量与测试断言已一并删除。
+- **本地化 ini 里残留的 `[Register]` 段**：注册页删除后已无人引用，
+  `[System]` 才是实际生效的部分。6 个 locale 文件里的该段
+  （每个 14 行）已删除。
+
+#### 第二轮：全树死代码清扫
+
+第一轮只处理了本节明确列出的四处。随后做了一次全树扫描（902 个顶层声明，
+逐个按裸标识符在整棵树里核对，并剔除注释与字符串中的出现），又清掉：
+
+- **注释掉的代码** 15 处、约 150 行，最大的是 `core/useitem/useitem.go` 的
+  喇叭处理 36 行、`core/inventory/inventory.go` 里整个 `BuildWeaponKillNum`
+  21 行、`core/achievement/campaign.go` 的解锁奖励循环 17 行。散落的
+  `//log.Println(...)` 一行式注释一并清除。现在全树没有 TODO/FIXME 标记，
+  也没有成块的注释代码。
+- **零引用函数/类型** 约 20 个，包括 `typestruct/roomSetting.go` 的
+  `GetFlags`（137 行，全树最大）、
+  `CreateFullUserInventory` → `CreateFullUserBuyMenu` → `CreateFullLoadout`
+  整条链、`BuildCurrentLobby` → `GetChannelUsers`、`buildMegaphone`、
+  `BuildDefaultInventoryInfo` / `DeafaultInventoryInfo`（名字本身还拼错了）、
+  `PraseInEventPacket` + `InEventPacket`、`UnlockKillNum` / `UnlockSeq`、
+  `User` 的 6 个方法（`SetNewMutex`/`SetUserRoom`/`PunishPoints`/
+  `AddItemSingle`/`Updated`/`CheckIllegalItem`）、`UManager.DelUser`、
+  `kerlong` 的 13 个 BE/数组辅助函数与 5 个未用 INI getter。
+- **零引用常量** 约 60 个：`ModeGz*` 系列、
+  `PacketTypeReply`/`Character`/`Ban`/`QuickStart`/`Friend`/`GZ`/`ConfigInfo`、
+  `ChatClan`/`ChatParty`/`ChatIngameParty`、`ChannelTypeClan` 等、
+  `KillSelf`/`KillOne`/`KillTeamCt`/`KillTeamTr`（后两者值都是 1）、
+  `HostUnk00`、以及若干 message 常量。这些属于**协议参考数据**，删掉后源码内
+  不再有对照；`.ref/CSO2-服务端双项目分析报告.md` 里的 opcode 表仍是权威来源。
+- **只写不读的结构体字段**，逐个人工确认无读取方后删除：`UnlockItem.Seq`
+  （75 处字面量在写）、`ItemData.Class`/`BuyCategory`、`BoxItem.ItemName`、
+  `InUDPmsg.ParsedSuccessfully`、`ChannelInfo.RoomNums`（唯一读取在已删除的
+  `GetNewRoomNumber` 里）。
+- **一条整条死掉的数据通路**：`UnlockList`。`readUnlockList` 解析
+  `item_unlock.csv` 填进 84 条，但唯一消费者是 `campaign.go` 里那段注释；
+  线上 `BuildUnlockReply` 用的是硬编码的 `UnlockFullList`，不是这个 map。
+  `.ref` 上游逐字相同，同样不是重写弄丢的。解析函数、`UnlockData`、
+  `UnlockList`、`UnlockCSV` 与 CSV 文件一并删除。
+
+清扫后，生产代码里已经没有任何「全树只出现一次（即仅有声明）」的顶层符号。
+
+#### 第三轮：行尾规范化
+
+§8 一直声称「整棵源码树已规范为 LF 行尾」，但那只覆盖了 `.go`。实测
+被跟踪文件里还有 10 个是 CRLF：6 个 `locales/*.ini` 与 4 个
+`scripts/*.csv`（`item_list.csv` 1134 行、`supplyList.csv` 353 行、
+`shop.csv` 156 行、`defaultItemList.csv` 108 行）。
+
+全部改为 LF 之后，用**真实解析路径**（本地化走 `CSO2Locales.InitLocales`
+的 INI 解析器，游戏数据走 `encoding/csv`）对转换前后的全部解析结果取
+SHA-256 摘要比对：`9d9a6d86…`，1867 项，逐字节相同。原因也说得通 ——
+INI 解析器每行 `TrimSpace`（顺带吃掉 `\r`），`encoding/csv` 会把 CRLF
+归一化成 LF。
+
+同时新增仓库根目录的 `.gitattributes`（`* text=auto eol=lf`），
+否则这些客户端文件下次在 Windows 上编辑就会漂回 CRLF。
+
+#### 第四轮：模块路径与版本号
+
+- **模块路径** `github.com/KouKouChan/CSO2-Server` → **`cso2-server`**。
+  Go 没有「输出文件名」开关，裸 `go build` 的产物名就是模块路径的最后一段，
+  所以改这一处就同时把默认产物名从 `CSO2-Server` 变成 `cso2-server`，
+  并去掉了原本指向上游作者仓库的路径。101 个文件、365 行 import 同步改写。
+  Dockerfile 里的 `/app/app.bin` 也一并改为 `/app/cso2-server`。
+
+  模块路径不带域名前缀是可以的：Go 只对**需要从代理拉取**的模块要求首段含点，
+  本项目永远只作为主模块本地构建（`go mod init hello` 那种写法同理）。
+  代价是它不能被别处 `go get` —— 本项目是个应用，不是给人引用的库，
+  这个限制无所谓。
+- **版本号** `ServerVersion` 由 `v0.8.0` 升到 `v0.9.0`
+  （`config/config.go`，`main.go` 的启动横幅与 `/api/status` 都用它）。
+  上游本身仍是 v0.8.0，因此文中凡是指「上游 v0.8.0」或历史遗留物
+  （如 `CSO2-Server.log`、旧的 `CSO2-Server/` 资源目录）的地方保持原样。
+- **玩家可见的上游链接一律未动**：`builtin/locales/motd.txt`、
+  `config/config.go` 里的备用 MOTD、以及 `login.go`「本游戏免费」那句提示，
+  共 3 处仍指向 `github.com/KouKouChan/CSO2-Server` —— 那是对上游项目的署名，
+  也是个真实可访问的地址。若要把它们改成自己的仓库，应是
+  `hm-gamesrv/counter-strike-online-2`，属于另一件事。
+- 另：客户端服务器列表里显示的名字来自
+  `typestruct/servermanager.go` 的 `DefalutServerName`（`CSO2-Server[1/1]`），
+  这次也没动 —— 它和产物文件名无关。
+
+### 11.2 清扫中发现、但本轮未改的行为问题
+
+这几条不是「有意保留」，而是清扫时顺带发现的真实缺陷。修它们等于新写功能，
+本轮按约定不动：
+
+- **战役奖励 1–4 恒为空** —— `RewardCapmgaign1..4` 会被读取并下发，
+  但唯一的生产者就是 `campaign.go` 里那段被注释掉的 `UnlockList` 循环，
+  所以这四类奖励永远是空列表。`.ref` 上游同样如此。
+- **快速匹配列表是桩** —— `core/quick/quicklist.go` 的 `BuildQuickList`
+  恒发送 0 个房间，原注释写着「暂时发送空数据」。
+- **战队/组队聊天未处理** —— `ChatClan`(5)、`ChatParty`(7)、
+  `ChatIngameParty`(9) 没有任何处理分支，这三类聊天消息会被当作未知类型丢弃。
